@@ -1,0 +1,3 @@
+# Keep line endings stable for the demo file
+*.html text eol=lf
+*.md text eol=lf
