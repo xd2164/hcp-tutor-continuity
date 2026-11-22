@@ -223,7 +223,7 @@ footer { margin-top: 18px; text-align: center; color: var(--muted); font-size: 1
           det("ctx-" + k, "What the tool receives (context block)", h("pre", { tabindex: 0 }, contextBlock(k))));
       })),
       h("p", { class: "note" }, "The math app never sees Mara's ELA record and the writing tool never sees the math record: each tool's HCP grant covers only its purpose. Change the sharing choices in step 3 and these messages change.")],
-      out: "Each tool starts from what Mara already knows, without a new integration per district." },
+      out: null },
   ];
 
   function render() {
@@ -240,7 +240,7 @@ footer { margin-top: 18px; text-align: center; color: var(--muted); font-size: 1
           h("button", { type: "button", disabled: S.step === 0, on: { click: () => go(S.step - 1) } }, "← Back"),
           h("button", { type: "button", class: "primary", disabled: S.step === STEPS.length - 1, on: { click: () => go(S.step + 1) } }, "Next →"))),
       ...s.body(),
-      h("div", { class: "out" }, h("b", {}, "What comes out: "), s.out));
+      s.out ? h("div", { class: "out" }, h("b", {}, "What comes out: "), s.out) : null);
     history.replaceState(null, "", "#step=" + (S.step + 1));
   }
   function go(i) { S.step = Math.max(0, Math.min(STEPS.length - 1, i)); render(); }
