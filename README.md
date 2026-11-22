@@ -51,6 +51,31 @@ profile as data** shows exactly what the new tutor receives.
 
 Presenting: ← → toggle the profile. Add `#cond=C` to open with the profile on.
 
+## From district data to the AI tools teachers already use
+
+```
+District data  →  Alignment  →  Minimum viable learner profile  →  Adapter  →  AI tutor app
+(synthetic)       (shared        (LearnCard + HCP, 5 labelled        (keeps the     (educator-built,
+                   standard IDs)  items, learner permissions)         labels)        or a tool's API)
+                                                    ↑                                    │
+                                                    └──────── session result written back as an inferred item
+```
+
+Section 5 of the demo, **Hand the profile to an AI tool**, is the adapter:
+
+- **Context block:** a labelled plain-text profile to paste into an educator-built AI tutor app.
+  VERIFIED, INFERRED (with confidence and expiry) and LEARNER SAYS are kept distinct, the
+  guardian's rule is included, and items the learner withheld are flagged rather than guessed.
+- **Structured JSON:** the same profile for a tool's API, with shared standard IDs and a
+  report-back shape for the session result.
+- **Label checks:** six checks confirm the trust labels survive the handoff.
+- **Write-back:** simulate the tool's session result coming back as a new inferred item, and
+  the new tutor's reply continues from it.
+
+Copy-paste works today. A live connection, where the tool asks through HCP under a grant, is
+the next step. Shared standard IDs use a placeholder namespace (`kg.example`) until an
+alignment tool maps them to a real knowledge graph.
+
 ## What is real and what is illustrative
 
 | Part | Status |
@@ -59,6 +84,7 @@ Presenting: ← → toggle the profile. Add `#cond=C` to open with the profile o
 | Sharing, withholding and withdrawal logic | **Working** in the page |
 | HCP access rules | Checked against 123/123 fixture scenarios in the reference provider: [hcp-learner-continuity](https://github.com/xd2164/hcp-learner-continuity) |
 | Tutor replies | **Illustrative**: deterministic sample text, not a live AI tutor |
+| Adapter (context block, JSON, label checks, write-back) | **Working** in the page; live tool connection **proposed** |
 | Live tutor and wallet integrations | **Proposed** |
 
 ## The pilot this points to

@@ -66,6 +66,11 @@ input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--ink); }
 .bundle { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 6px 0 4px; font-size: 14.5px; }
 .bundle > div { border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; background: var(--soft); }
 @media (max-width: 760px) { .bundle { grid-template-columns: minmax(0, 1fr); } }
+button.primary { background: var(--ink); color: var(--card); border-color: transparent; }
+.avail { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 8px; }
+.avail li { display: flex; gap: 10px; align-items: center; }
+.ok { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--good); color: var(--good); display: inline-grid; place-items: center; font-size: 11px; font-weight: 800; flex: none; }
+.no { width: 18px; height: 18px; border-radius: 50%; background: var(--base); display: inline-block; flex: none; }
 .leftout { margin-top: 10px; font-size: 14px; color: var(--ink2); }
 .dg { max-width: 860px; margin: 0 auto; }
 .dg svg { width: 100%; height: auto; display: block; }
@@ -120,7 +125,15 @@ footer { margin-top: 18px; text-align: center; color: var(--muted); font-size: 1
       without: "Ask how much time Mara has" },
   ];
   const LABEL = { A: "No profile", C: "With Mara's learner profile" };
-  const S = { cond: "A", on: { stands: true, leftoff: true, helps: true, blocks: true, time: true }, revoked: false, open: {} };
+  const S = { cond: "A", on: { stands: true, leftoff: true, helps: true, blocks: true, time: true }, revoked: false, open: {}, fmt: "block", wb: false };
+  // Alignment: shared identifiers for standards (placeholders until mapped to the real Knowledge Graph)
+  const KG = (code) => "https://kg.example/ccss/math/" + code;
+  const NEXT = [["8.EE.C.8", "systems of linear equations"], ["8.F.B.4", "modeling with linear functions"], ["8.F.B.5", "describing functions from graphs"]];
+  // Item 2 changes after the AI tool writes its session result back
+  const WB = { value: "Today, in the AI tutor app: 2 of 2 correct on the systems-of-equations check. Moved on to modeling with linear functions. Expires in 4 months.",
+    source: "AI tutor app session result · medium confidence" };
+  const val = (it) => it.n === 2 && S.wb ? WB.value : it.value;
+  const src = (it) => it.n === 2 && S.wb ? WB.source : it.source;
 
   const included = (cond, it) => !S.revoked && S.on[it.key] && cond === "C";
   const inc = (cond) => new Set(MVLC.filter((it) => included(cond, it)).map((it) => it.n));
@@ -129,7 +142,8 @@ footer { margin-top: 18px; text-align: center; color: var(--muted); font-size: 1
     if (S.revoked && cond !== "A") return [{ t: "Mara's guardian withdrew this tutor's access, so I'm starting from scratch. " + cold, ids: [] }];
     const I = inc(cond), parts = [];
     if (!I.size) return [{ t: cold, ids: [] }];
-    if (I.has(1) && I.has(2)) parts.push({ t: "Picking up where your last tutor left off: you got 4 of your last 5 systems-of-equations problems right, so let's do a quick 2-problem check, then move on to modeling with linear functions.", ids: [1, 2] });
+    if (I.has(1) && I.has(2) && S.wb) parts.push({ t: "Picking up from your last session: you passed the systems-of-equations check, so let's start modeling with linear functions.", ids: [1, 2] });
+    else if (I.has(1) && I.has(2)) parts.push({ t: "Picking up where your last tutor left off: you got 4 of your last 5 systems-of-equations problems right, so let's do a quick 2-problem check, then move on to modeling with linear functions.", ids: [1, 2] });
     else if (I.has(1)) parts.push({ t: "You've mastered 17 of 23 standards, so we'll skip those and start with systems of equations.", ids: [1] });
     else if (I.has(2)) parts.push({ t: "Your last tutor saw you get 4 of your last 5 systems-of-equations problems right. Let's check those quickly, then do a short quiz to see what else you know.", ids: [2] });
     else parts.push({ t: "Let's start with a short quiz to find your level.", ids: [] });
@@ -217,14 +231,62 @@ footer { margin-top: 18px; text-align: center; color: var(--muted); font-size: 1
     return {
       profile: "Minimum viable learner profile (LearnCard + HCP)", recipient: "Tutor B (new tutor)", purpose: "tutoring",
       entries: MVLC.filter((it) => I.has(it.n)).map((it) => {
-        const e = { item: `${CIRC[it.n]} ${it.name}`, type: "ContextEntry", declarationType: DECL[it.type], category: CATS[it.n], value: it.value, source: it.source };
-        if (it.n === 1) e.evidence = { type: "verifiable-credential", issuer: "School district (synthetic)", credentials: 17, plusRecordOf: ["8.EE.C.8", "8.F.B.4", "8.F.B.5"] };
+        const e = { item: `${CIRC[it.n]} ${it.name}`, type: "ContextEntry", declarationType: DECL[it.type], category: CATS[it.n], value: val(it), source: src(it) };
+        if (it.n === 1) e.evidence = { type: "verifiable-credential", issuer: "School district (synthetic)", credentials: 17,
+          nextUp: NEXT.map(([c, what]) => ({ standard: c, label: what, sharedId: KG(c) })) };
         if (it.n === 2) Object.assign(e, { confidence: "medium", observedAt: "2026-07-06", validUntil: "2026-11-03", basis: "10 tutored items, last 5 scored" });
         return e;
       }),
       directives: [{ action: "sign", effect: "ask-first", text: RULE }],
       neverShared: ["IEP and 504 support plans", "demographics", "full transcript and every score", "chat logs"],
     };
+  }
+
+  // ------------------------------------------------------------------ adapter: the profile, ready for an AI tool
+  function contextBlock(cond) {
+    if (S.revoked && cond !== "A") return "No profile available: Mara's guardian withdrew this tool's access.";
+    const I = inc(cond);
+    if (!I.size) return "No profile shared. The tool sees only Mara's question.";
+    const L = [
+      "LEARNER PROFILE (minimum viable) · Mara · purpose: tutoring",
+      "Shared by Mara and a guardian through LearnCard + HCP. Use only what is below.",
+      "Treat VERIFIED as fact, INFERRED as a hint to confirm, LEARNER SAYS as Mara's own words.",
+      "",
+    ];
+    const it = (n) => MVLC[n - 1];
+    if (I.has(1)) L.push("① VERIFIED (school district, signed credentials): Mastered 17 of 23 Grade 8 standards. Next up: " +
+      NEXT.map(([c, w]) => `${c} ${w} [${KG(c)}]`).join("; ") + ".");
+    if (I.has(2)) L.push(S.wb ? "② INFERRED (AI tutor app, medium confidence, observed today, expires in 4 months): 2 of 2 correct on the systems-of-equations check. Continue with 8.F.B.4."
+      : "② INFERRED (last tutor, medium confidence, observed 2026-07-06, expires 2026-11-03): 4 of the last 5 systems-of-equations problems correct. Confirm with a short check before moving on.");
+    if (I.has(3)) L.push(`③ LEARNER SAYS (what helps): ${it(3).value}`);
+    if (I.has(4)) L.push(`④ LEARNER SAYS (what gets in the way): ${it(4).value}`);
+    if (I.has(5)) L.push(`⑤ LEARNER SAYS (time): ${it(5).value}`);
+    const off = MVLC.filter((x) => !I.has(x.n)).map((x) => CIRC[x.n]);
+    if (off.length) L.push(`Not shared by Mara: ${off.join(" ")}. Don't guess these; ask if you need them.`);
+    L.push("", `RULE from guardian: ${RULE}`, "Never ask for or infer: support plans, demographics.",
+      "When the session ends, report back: standard practised, problems attempted and correct. It returns to the profile as an INFERRED item.");
+    return L.join("\n");
+  }
+  function toolJson(cond) {
+    const m = message(cond);
+    return m.entries ? { ...m, reportBack: { as: "model-inferred", fields: ["standard", "sharedId", "attempted", "correct", "observedAt"] } } : m;
+  }
+  function labelChecks(cond) {
+    const t = contextBlock(cond), I = inc(cond);
+    if (!I.size || (S.revoked && cond !== "A")) return [];
+    return [
+      ["Verified items are marked VERIFIED, with who signed them", !I.has(1) || /① VERIFIED \(school district, signed/.test(t)],
+      ["Inferences are marked INFERRED, with confidence and expiry", !I.has(2) || /② INFERRED \(.*medium confidence.*expires/.test(t)],
+      ["Only the items Mara shared are included", MVLC.every((x) => I.has(x.n) === t.includes(CIRC[x.n] + " " + (x.n === 1 ? "VERIFIED" : x.n === 2 ? "INFERRED" : "LEARNER SAYS")))],
+      ["The guardian's rule travels with the profile", t.includes(RULE)],
+      ["Nothing from the left-out list (support plans, demographics)", !/IEP|504 plan|ethnicity|income/i.test(t)],
+      ["Standards carry shared IDs, not just local codes", !I.has(1) || t.includes(KG("8.EE.C.8"))],
+    ];
+  }
+  function copyText(text) {
+    const done = () => { S.copied = true; render(); setTimeout(() => { S.copied = false; render(); }, 1500); };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, done);
+    else { const ta = h("textarea", {}); ta.value = text; document.body.append(ta); ta.select(); try { document.execCommand("copy"); } catch (e) {} ta.remove(); done(); }
   }
 
   // ------------------------------------------------------------------ page
@@ -254,8 +316,8 @@ footer { margin-top: 18px; text-align: center; color: var(--muted); font-size: 1
         const used = I.has(it.n);
         return h("div", { class: "mvrow" + (used ? "" : " off") },
           h("div", { class: "big", "aria-hidden": "true" }, CIRC[it.n]),
-          h("div", {}, h("div", { class: "name" }, it.name), h("div", { class: "row", style: "margin-top:4px" }, badge(it.type)), h("div", { class: "note" }, it.source)),
-          h("div", {}, h("div", { class: "k" }, "Mara's record"), h("div", { class: "val" }, it.value)),
+          h("div", {}, h("div", { class: "name" }, it.name), h("div", { class: "row", style: "margin-top:4px" }, badge(it.type)), h("div", { class: "note" }, src(it))),
+          h("div", {}, h("div", { class: "k" }, "Mara's record"), h("div", { class: "val" }, val(it))),
           h("div", {}, h("div", { class: "k" }, "Changes the first move"), h("div", { class: "chg" }, it.changes),
             h("div", { class: "note" }, used ? "Used in the reply" : cond === "A" ? "Not shared: no profile" : S.revoked ? "Access withdrawn" : "Withheld by Mara and guardian")),
           h("label", { class: "tog" }, h("input", { type: "checkbox", checked: S.on[it.key], on: { change: (e) => { S.on[it.key] = e.target.checked; render(); } } }), "Share"));
@@ -270,10 +332,23 @@ footer { margin-top: 18px; text-align: center; color: var(--muted); font-size: 1
         S.revoked ? h("button", { type: "button", on: { click: () => { S.revoked = false; render(); } } }, "Restore tutor access")
           : h("button", { type: "button", class: "danger", on: { click: () => { S.revoked = true; render(); } } }, "Withdraw tutor access")));
 
-    const s5 = h("details", { class: "sec", open: !!S.open.hcp, on: { toggle: (e) => { S.open.hcp = e.currentTarget.open; } } },
-      h("summary", {}, h("b", {}, "Show the profile as data"), h("span", { class: "note" }, "  · exactly what the new tutor receives, as LearnCard + HCP send it")),
-      h("pre", { tabindex: 0 }, JSON.stringify(message(cond), null, 2)),
-      h("div", { class: "row", style: "margin-top:8px" }, st("working", "permission logic in this page"), st("proposed", "live tutor integrations"),
+    const text = S.fmt === "block" ? contextBlock(cond) : JSON.stringify(toolJson(cond), null, 2);
+    const checks = labelChecks(cond);
+    const s5 = sec("5", "Hand the profile to an AI tool",
+      h("p", { style: "margin-top:0" }, "An adapter turns the profile into what an AI tool can use, without losing the trust labels. Today: paste it in. Later: the tool asks through HCP."),
+      h("div", { class: "seg", role: "group", "aria-label": "Format" },
+        h("button", { type: "button", "aria-pressed": String(S.fmt === "block"), on: { click: () => { S.fmt = "block"; render(); } } }, "Context block · for an educator-built AI tutor app"),
+        h("button", { type: "button", "aria-pressed": String(S.fmt === "json"), on: { click: () => { S.fmt = "json"; render(); } } }, "Structured JSON · for a tool's API")),
+      h("pre", { tabindex: 0, style: "white-space:pre-wrap" }, text),
+      h("div", { class: "row", style: "margin-top:8px" },
+        h("button", { type: "button", class: "primary", on: { click: () => copyText(text) } }, S.copied ? "✓ Copied" : "Copy"),
+        cond === "C" && !S.revoked && S.on.leftoff
+          ? h("button", { type: "button", on: { click: () => { S.wb = !S.wb; render(); } } }, S.wb ? "Undo the write-back" : "Simulate the tool's write-back")
+          : null,
+        st("proposed", "live tool integration · copy-paste works today")),
+      checks.length ? h("ul", { class: "avail", style: "margin-top:12px" }, checks.map(([l, ok]) => h("li", {}, ok ? h("span", { class: "ok" }, "✓") : h("span", { class: "no" }), l))) : null,
+      S.wb ? h("p", { class: "note" }, "Written back: the tool's session result replaced ② as a new inferred item. The reply in section 2 now continues from it.") : null,
+      h("p", { class: "note" }, "Shared IDs are placeholders (kg.example) until the standards are mapped to the real Knowledge Graph by an alignment tool. ",
         h("a", { href: "https://github.com/xd2164/hcp-learner-continuity" }, "Reference HCP provider (123/123 fixture scenarios)")));
     return [s1, s2, s3, s4, s5];
   }
@@ -303,6 +378,16 @@ footer { margin-top: 18px; text-align: center; color: var(--muted); font-size: 1
     ok("withdrawn access: the tutor starts from scratch", /starting from scratch/.test(reply("C")[0].t) && message("C").error === "invalid-token");
     S.revoked = false;
     ok("the HCP message is exactly the five items", message("C").entries.length === 5);
+    S.cond = "C";
+    ok("adapter: the context block marks verified and inferred with expiry", /① VERIFIED/.test(contextBlock("C")) && /② INFERRED \(.*expires/.test(contextBlock("C")));
+    ok("adapter: every label check passes with the full profile", labelChecks("C").length === 6 && labelChecks("C").every((c) => c[1]));
+    S.on.helps = false;
+    ok("adapter: a withheld item is left out and flagged", !/③ LEARNER SAYS/.test(contextBlock("C")) && /Not shared by Mara: ③/.test(contextBlock("C")) && labelChecks("C").every((c) => c[1]));
+    S.on.helps = true;
+    ok("adapter: JSON carries shared standard IDs and a report-back shape", JSON.stringify(toolJson("C")).includes(KG("8.EE.C.8")) && toolJson("C").reportBack.as === "model-inferred");
+    S.wb = true;
+    ok("write-back: item 2 updates and the reply continues from it", /AI tutor app/.test(contextBlock("C")) && /passed the systems-of-equations check/.test(reply("C")[0].t));
+    S.wb = false;
     ok("support plans are never an item", !MVLC.some((it) => /IEP|504/.test(it.value)) && message("C").neverShared.includes("IEP and 504 support plans"));
     Object.assign(S, JSON.parse(keep)); render();
     document.title = res.every((x) => x.startsWith("PASS")) ? "SELFTEST PASS" : "SELFTEST FAIL";
