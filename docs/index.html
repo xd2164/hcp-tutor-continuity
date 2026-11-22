@@ -3,163 +3,148 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Switch AI tutors, keep your learning</title>
+<title>From district data to the AI tools teachers use</title>
 <style>
 :root {
   color-scheme: light;
   --page: #f9f9f7; --card: #fcfcfb; --soft: #f3f2ee; --ink: #0b0b0b; --ink2: #52514e; --muted: #898781;
   --line: rgba(11,11,11,0.10); --grid: #e1e0d9; --base: #c3c2b7;
-  --proven: #2a78d6; --wanted: #eb6834; --likely: #1baf7a; --good: #006300; --bad: #d03b3b;
+  --proven: #2a78d6; --wanted: #eb6834; --good: #006300; --bad: #d03b3b;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
     --page: #0d0d0d; --card: #1a1a19; --soft: #232322; --ink: #f0efec; --ink2: #c3c2b7; --muted: #898781;
     --line: rgba(255,255,255,0.10); --grid: #2c2c2a; --base: #383835;
-    --proven: #3987e5; --wanted: #d95926; --likely: #199e70; --good: #0ca30c; --bad: #e66767;
+    --proven: #3987e5; --wanted: #d95926; --good: #0ca30c; --bad: #e66767;
   }
 }
 * { box-sizing: border-box; }
-[hidden] { display: none !important; }
 body { margin: 0; background: var(--page); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
 .wrap { max-width: 1060px; margin: 0 auto; padding: 24px 20px 48px; }
 h1 { font-size: 26px; margin: 0; }
-h2 { font-size: 19px; margin: 0; }
+h2 { font-size: 21px; margin: 0; }
 p { margin: 6px 0; }
 .sub { color: var(--ink2); margin: 4px 0 0; }
 .note { color: var(--muted); font-size: 13px; }
 button { font: inherit; color: inherit; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px 14px; cursor: pointer; }
-button.danger { color: var(--bad); }
+button.primary { background: var(--ink); color: var(--card); border-color: transparent; }
+button:disabled { opacity: 0.4; cursor: default; }
 button:focus-visible, summary:focus-visible, input:focus-visible { outline: 2px solid var(--proven); outline-offset: 2px; }
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-.sec { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; margin-top: 14px; min-width: 0; }
-.sh { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
-.num { width: 26px; height: 26px; border-radius: 50%; background: var(--ink); color: var(--card); display: inline-grid; place-items: center; font-weight: 700; font-size: 14px; flex: none; }
-.q { font-size: 21px; margin: 2px 0 6px; }
-.seg { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; margin: 8px 0 14px; }
-.seg button { border: 0; background: transparent; color: var(--muted); font-weight: 600; border-radius: 999px; }
-.seg button[aria-pressed="true"] { background: var(--soft); color: var(--ink); }
-.agent { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
-.agent .who { font-weight: 650; margin-bottom: 6px; }
-.agent p { margin: 0; font-size: 17px; line-height: 1.7; }
-.tag { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 4px; border-radius: 10px; font-size: 12px; font-weight: 700; background: var(--soft); border: 1px solid var(--line); color: var(--ink2); margin-left: 3px; vertical-align: 2px; }
-.todo { margin-top: 12px; }
-.todo ul { margin: 4px 0 0; padding-left: 20px; }
-.todo.done b { color: var(--good); }
+
+.flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr; gap: 6px; align-items: stretch; margin: 20px 0 16px; }
+.flow button { text-align: left; border-radius: 12px; padding: 10px 12px; }
+.flow button .k { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; color: var(--muted); text-transform: uppercase; }
+.flow button .t { display: block; font-weight: 650; }
+.flow button .d { display: block; font-size: 13px; color: var(--ink2); }
+.flow button[aria-current="step"] { border-color: var(--ink); box-shadow: inset 0 -3px 0 var(--ink); }
+.flow .arr { align-self: center; color: var(--muted); font-size: 20px; }
+@media (max-width: 860px) { .flow { grid-template-columns: minmax(0, 1fr); } .flow .arr { transform: rotate(90deg); justify-self: center; } }
+
+.panel { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+.head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 12px; }
+.out { margin-top: 14px; padding: 10px 14px; border-radius: 10px; background: var(--soft); font-size: 15px; }
+.out b { color: var(--ink); }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+th { color: var(--ink2); font-size: 13px; font-weight: 600; }
+code { font: 13px ui-monospace, Consolas, monospace; background: var(--soft); padding: 1px 5px; border-radius: 4px; }
 .st { display: inline-flex; gap: 6px; align-items: center; font-size: 12px; border: 1px solid var(--line); border-radius: 999px; padding: 1px 9px; color: var(--ink2); }
 .st b { color: var(--ink); font-weight: 600; }
 .st.w b { color: var(--good); }
 .pill { display: inline-flex; gap: 5px; align-items: center; font-size: 12px; border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; color: var(--ink2); white-space: nowrap; }
 .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-.mv { display: grid; gap: 8px; margin-top: 8px; }
-.mvrow { display: grid; grid-template-columns: 34px 1.1fr 1.5fr 1.3fr auto; gap: 12px; align-items: start; border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
-.mvrow.off { background: var(--soft); }
-.mvrow.off .val, .mvrow.off .chg { color: var(--muted); }
-.mvrow .big { font-size: 20px; font-weight: 800; color: var(--ink2); line-height: 1; padding-top: 2px; }
-.mvrow .name { font-weight: 650; }
-.mvrow .val { font-size: 15px; }
-.mvrow .chg { font-size: 14px; }
-.mvrow .k { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
-@media (max-width: 860px) { .mvrow { grid-template-columns: 30px minmax(0, 1fr); } .mvrow > :nth-child(n+3) { grid-column: 2; } }
+.items { display: grid; gap: 8px; }
+.item { display: grid; grid-template-columns: 1fr auto; gap: 10px; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.item.off { background: var(--soft); color: var(--muted); }
+.item .name { font-weight: 650; }
 .tog { display: inline-flex; gap: 6px; align-items: center; font-size: 14px; white-space: nowrap; }
 input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--ink); }
-.bundle { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 6px 0 4px; font-size: 14.5px; }
-.bundle > div { border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; background: var(--soft); }
-@media (max-width: 760px) { .bundle { grid-template-columns: minmax(0, 1fr); } }
-button.primary { background: var(--ink); color: var(--card); border-color: transparent; }
-.avail { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 8px; }
-.avail li { display: flex; gap: 10px; align-items: center; }
-.ok { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--good); color: var(--good); display: inline-grid; place-items: center; font-size: 11px; font-weight: 800; flex: none; }
-.no { width: 18px; height: 18px; border-radius: 50%; background: var(--base); display: inline-block; flex: none; }
-.leftout { margin-top: 10px; font-size: 14px; color: var(--ink2); }
-.dg { max-width: 860px; margin: 0 auto; }
-.dg svg { width: 100%; height: auto; display: block; }
-.dg rect { fill: var(--card); stroke: var(--line); stroke-width: 1.5; }
-.dg .on rect { stroke: var(--ink); stroke-width: 2; }
-.dg .hub rect { fill: var(--soft); }
-.dg .off { opacity: 0.35; }
-.dg text.t { fill: var(--ink); font-size: 18px; font-weight: 650; }
-.dg text.d { fill: var(--ink2); font-size: 13.5px; }
-.dg .e path { fill: none; stroke: var(--base); stroke-width: 1.5; }
-.dg .e text { fill: var(--muted); font-size: 13.5px; }
-.dg .e.on path { stroke: var(--ink); stroke-width: 2.25; }
-.dg .e.on text { fill: var(--ink); font-weight: 600; }
-.dg .e.rv path { stroke: var(--bad); stroke-dasharray: 6 5; }
-.dg .e.rv text { fill: var(--bad); font-weight: 600; }
-.dg .ah { fill: var(--base); } .dg .ah.on { fill: var(--ink); } .dg .ah.rv { fill: var(--bad); }
+.tools { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 860px) { .tools { grid-template-columns: minmax(0, 1fr); } }
+.tool { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; min-width: 0; }
+.tool h3 { margin: 0; font-size: 18px; }
+.tool ul { margin: 6px 0 0; padding-left: 18px; font-size: 14.5px; }
+.first { margin-top: 10px; background: var(--soft); border-radius: 10px; padding: 10px 12px; font-size: 15.5px; }
+.first .who { font-size: 12px; color: var(--muted); margin-bottom: 2px; }
 details > summary { cursor: pointer; }
-pre { margin: 8px 0 0; padding: 10px; background: var(--soft); border-radius: 8px; overflow: auto; max-height: 380px; font: 12px/1.45 ui-monospace, Consolas, monospace; }
+pre { margin: 8px 0 0; padding: 10px; background: var(--soft); border-radius: 8px; overflow: auto; max-height: 340px; font: 12px/1.45 ui-monospace, Consolas, monospace; white-space: pre-wrap; }
 footer { margin-top: 18px; text-align: center; color: var(--muted); font-size: 13px; }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>Switch AI tutors. Keep your learning.</h1>
-  <p class="sub">A minimum viable learner profile, five items carried by LearnCard and HCP as one bundle, lets a new AI tutor pick up where the last one left off.</p>
-  <main id="app"></main>
-  <footer>Synthetic learner from the Understudy fixture (seed 2368342781). Tutor replies are illustrative. ← → toggle the profile.</footer>
+  <h1>From district data to the AI tools teachers use</h1>
+  <p class="sub">One learner's record: aligned once to shared skills, exported with permission through HCP, and used by the AI tools teachers already use.</p>
+  <nav class="flow" id="flow" aria-label="Steps"></nav>
+  <main class="panel" id="panel"></main>
+  <footer>Synthetic learner (Mara) from the Understudy fixture, seed 2368342781. Tool outputs are illustrative. ← → move between steps.</footer>
 </div>
 <script>
 (function () {
   "use strict";
-  // ------------------------------------------------------------------ the minimum viable learner context (Understudy learner SYN-04DC274F)
-  const QUESTION = "Can you help me get ready for my next math unit?";
-  const RULE = "Ask me before you sign me up for anything or agree to anything for me.";
-  const MVLC = [
-    { n: 1, key: "stands", name: "Where Mara stands", type: "verified", source: "School district · signed credentials", level: "B",
-      value: "Mastered 17 of 23 Grade 8 standards. Next up: systems of equations, modeling with linear functions, describing functions from graphs.",
-      changes: "Skips the 17 mastered standards. No placement quiz.",
-      without: "Run a placement quiz first (about 46 questions)" },
-    { n: 2, key: "leftoff", name: "Where Mara left off", type: "inferred", source: "Last tutor's session notes · medium confidence", level: "C",
-      value: "2 weeks ago: 4 of the last 5 systems-of-equations problems right. Expires in 4 months.",
-      changes: "A 2-problem check instead of re-teaching systems of equations.",
-      without: "Re-teach systems of equations from the start" },
-    { n: 3, key: "helps", name: "What helps Mara learn", type: "learner-declared", source: "Mara, in Mara's own words", level: "C",
-      value: "“can you explain what its asking first”", changes: "Starts each problem by working out what it's asking.",
-      without: "Ask how Mara likes to learn" },
-    { n: 4, key: "blocks", name: "What gets in the way", type: "learner-declared", source: "Mara · also seen by the last tutor", level: "C",
-      value: "“i never know what the word problems are asking”", changes: "Practises reading word problems instead of more drills.",
-      without: "Ask what Mara finds hardest" },
-    { n: 5, key: "time", name: "Time available", type: "learner-declared", source: "Mara, in Mara's own words", level: "C",
-      value: "About 15 minutes on school nights, more on weekends.", changes: "Plans a 15-minute session for tonight.",
-      without: "Ask how much time Mara has" },
+  // ------------------------------------------------------------------ Mara's synthetic district record (Understudy SYN-04DC274F)
+  const SKILLS = [
+    { code: "8.EE.C.8", subject: "math", skill: "Solve systems of two linear equations", level: "Near mastery" },
+    { code: "8.F.B.4", subject: "math", skill: "Build a function to model a linear relationship", level: "Near mastery" },
+    { code: "8.F.B.5", subject: "math", skill: "Describe a function from its graph", level: "Near mastery" },
+    { code: "L.7.2", subject: "ela", skill: "Use conventions of capitalization, punctuation and spelling", level: "Near mastery" },
+    { code: "L.7.4", subject: "ela", skill: "Work out the meaning of unknown words", level: "Near mastery" },
   ];
-  const LABEL = { A: "No profile", C: "With Mara's learner profile" };
-  const S = { cond: "A", on: { stands: true, leftoff: true, helps: true, blocks: true, time: true }, revoked: false, open: {}, fmt: "block", wb: false };
-  // Alignment: shared identifiers for standards (placeholders until mapped to the real Knowledge Graph)
-  const KG = (code) => "https://kg.example/ccss/math/" + code;
-  const NEXT = [["8.EE.C.8", "systems of linear equations"], ["8.F.B.4", "modeling with linear functions"], ["8.F.B.5", "describing functions from graphs"]];
-  // Item 2 changes after the AI tool writes its session result back
-  const WB = { value: "Today, in the AI tutor app: 2 of 2 correct on the systems-of-equations check. Moved on to modeling with linear functions. Expires in 4 months.",
-    source: "AI tutor app session result · medium confidence" };
-  const val = (it) => it.n === 2 && S.wb ? WB.value : it.value;
-  const src = (it) => it.n === 2 && S.wb ? WB.source : it.source;
+  const KG = (code) => "kg:ccss/" + code;
+  const WORDS = { helps: "can you explain what its asking first", hard: "i never know what the word problems are asking", time: "about 15 mins on school nights" };
+  const S = { step: 0, share: { record: true, words: true }, open: {} };
 
-  const included = (cond, it) => !S.revoked && S.on[it.key] && cond === "C";
-  const inc = (cond) => new Set(MVLC.filter((it) => included(cond, it)).map((it) => it.n));
-  function reply(cond) {
-    const cold = "Hi! Before we start, let's do a placement quiz so I can find your level: about 46 questions, two for each of this year's 23 standards.";
-    if (S.revoked && cond !== "A") return [{ t: "Mara's guardian withdrew this tutor's access, so I'm starting from scratch. " + cold, ids: [] }];
-    const I = inc(cond), parts = [];
-    if (!I.size) return [{ t: cold, ids: [] }];
-    if (I.has(1) && I.has(2) && S.wb) parts.push({ t: "Picking up from your last session: you passed the systems-of-equations check, so let's start modeling with linear functions.", ids: [1, 2] });
-    else if (I.has(1) && I.has(2)) parts.push({ t: "Picking up where your last tutor left off: you got 4 of your last 5 systems-of-equations problems right, so let's do a quick 2-problem check, then move on to modeling with linear functions.", ids: [1, 2] });
-    else if (I.has(1)) parts.push({ t: "You've mastered 17 of 23 standards, so we'll skip those and start with systems of equations.", ids: [1] });
-    else if (I.has(2)) parts.push({ t: "Your last tutor saw you get 4 of your last 5 systems-of-equations problems right. Let's check those quickly, then do a short quiz to see what else you know.", ids: [2] });
-    else parts.push({ t: "Let's start with a short quiz to find your level.", ids: [] });
-    if (I.has(3) && I.has(4)) parts.push({ t: "Word problems are where you get stuck, so we'll start each one by working out what it's asking, like you asked.", ids: [3, 4] });
-    else if (I.has(3)) parts.push({ t: "We'll start each problem by working out what it's asking, like you asked.", ids: [3] });
-    else if (I.has(4)) parts.push({ t: "Word problems are where you get stuck, so we'll practise reading them.", ids: [4] });
-    if (I.has(5)) parts.push({ t: "We'll keep it to 15 minutes tonight.", ids: [5] });
-    return parts;
-  }
-  function todo(cond) {
-    const I = S.revoked && cond !== "A" ? new Set() : inc(cond), out = [];
-    if (!I.has(1) && !I.has(2)) out.push("Run a placement quiz first (about 46 questions)");
-    else if (!I.has(1)) out.push("Run a short placement quiz on the other standards");
-    if (I.has(1) && !I.has(2)) out.push("Re-teach systems of equations from the start");
-    for (const n of [3, 4, 5]) if (!I.has(n)) out.push(MVLC[n - 1].without);
+  // ------------------------------------------------------------------ what each tool receives (purpose-scoped)
+  const TOOLS = {
+    math: { name: "Math tutor app", what: "Built by a teacher on an AI app platform", purpose: "math-tutoring", subject: "math" },
+    writing: { name: "Writing practice tool", what: "Writing and grammar practice", purpose: "writing-practice", subject: "ela" },
+  };
+  function received(toolKey) {
+    const T = TOOLS[toolKey], out = [];
+    if (S.share.record) {
+      out.push({ kind: "verified", text: T.subject === "math" ? "Strength: 17 of 23 Grade 8 math standards mastered" : "Strength: 14 of 16 Grade 7 ELA standards mastered" });
+      for (const sk of SKILLS.filter((x) => x.subject === T.subject)) out.push({ kind: "verified", text: `Next skill: ${sk.skill} (${sk.code})`, id: KG(sk.code) });
+    }
+    if (S.share.words) {
+      out.push({ kind: "learner", text: `What helps: “${WORDS.helps}”` });
+      if (T.subject === "math") out.push({ kind: "learner", text: `What's hard: “${WORDS.hard}”` });
+      out.push({ kind: "learner", text: `Time: ${WORDS.time}` });
+    }
     return out;
+  }
+  function firstReply(toolKey) {
+    const rec = S.share.record, w = S.share.words;
+    if (toolKey === "math") {
+      const a = rec ? "Let's work on solving systems of two equations: it's your next step, and you've already mastered most of Grade 8."
+        : "Let's start with a short quiz so I can find your level.";
+      const b = w ? " I'll start each word problem by working out what it's asking, and we'll keep it to 15 minutes tonight." : "";
+      return a + b;
+    }
+    const a = rec ? "Today's practice: punctuation and spelling in your own sentences. That's the one Grade 7 language skill still to master."
+      : "Let's start with a short writing sample so I can see what to practise.";
+    const b = w ? " I'll explain what each activity is asking first, and it takes about 15 minutes." : "";
+    return a + b;
+  }
+  function contextBlock(toolKey) {
+    const T = TOOLS[toolKey], r = received(toolKey);
+    if (!r.length) return "No learner profile shared. The tool starts from scratch.";
+    return [`LEARNER PROFILE · Mara · for ${T.name} (${T.purpose})`, "Shared by Mara and a guardian through HCP. VERIFIED = school record. LEARNER SAYS = Mara's own words.", "",
+      ...r.map((x) => `${x.kind === "verified" ? "VERIFIED" : "LEARNER SAYS"}: ${x.text}${x.id ? ` [${x.id}]` : ""}`), "",
+      "Never ask for or infer: support plans, demographics."].join("\n");
+  }
+  function hcpExport() {
+    const entries = [];
+    if (S.share.record) {
+      entries.push({ type: "ContextEntry", declarationType: "issuer-attested", category: "education_learner_profile", value: "Math: 17 of 23 Grade 8 standards mastered", issuer: "School district (synthetic)" });
+      entries.push({ type: "ContextEntry", declarationType: "issuer-attested", category: "education_learner_profile", value: "ELA: 14 of 16 Grade 7 standards mastered", issuer: "School district (synthetic)" });
+      for (const sk of SKILLS) entries.push({ type: "ContextEntry", declarationType: "issuer-attested", category: "education_learner_profile", value: `Next skill: ${sk.skill}`, standard: sk.code, sharedId: KG(sk.code), alignedBy: "alignment service (proposed)" });
+    }
+    if (S.share.words) for (const [k, v] of Object.entries(WORDS)) entries.push({ type: "ContextEntry", declarationType: "person-declared", category: "learner_statements", field: k, value: v, assertedBy: "Mara" });
+    return { type: "ContextExport", subject: "did:example:learner:mara", exportedBy: "LearnCard (HCP provider)", entries,
+      grants: Object.entries(TOOLS).map(([k, T]) => ({ client: T.name, purpose: T.purpose, reads: T.subject === "math" ? "math skills + Mara's words" : "ELA skills + Mara's words", status: "active" })),
+      neverShared: ["IEP and 504 support plans", "demographics", "full transcript and every score"] };
   }
 
   // ------------------------------------------------------------------ helpers
@@ -173,223 +158,115 @@ footer { margin-top: 18px; text-align: center; color: var(--muted); font-size: 1
     for (const c of kids.flat()) if (c != null && c !== false) n.append(c instanceof Node ? c : document.createTextNode(String(c)));
     return n;
   }
-  const COLOR = { verified: "var(--proven)", inferred: "var(--likely)", "learner-declared": "var(--wanted)" };
-  const badge = (b) => { const d = h("span", { class: "dot" }); d.style.background = COLOR[b]; return h("span", { class: "pill" }, d, b); };
-  const STX = { working: "● Working", synthetic: "◐ Synthetic fixture", mock: "○ Mocked", proposed: "◌ Proposed" };
+  const STX = { working: "● Working", synthetic: "◐ Synthetic data", proposed: "◌ Proposed" };
   const st = (k, what) => h("span", { class: "st" + (k === "working" ? " w" : "") }, h("b", {}, STX[k]), what);
-  const CIRC = ["", "①", "②", "③", "④", "⑤"];
-  const sec = (n, title, ...kids) => h("section", { class: "sec" }, h("div", { class: "sh" }, h("span", { class: "num" }, n), h("h2", {}, title)), ...kids);
+  const label = (kind) => { const d = h("span", { class: "dot" }); d.style.background = kind === "verified" ? "var(--proven)" : "var(--wanted)"; return h("span", { class: "pill" }, d, kind === "verified" ? "verified" : "Mara's words"); };
+  function det(key, summary, ...kids) {
+    const d = h("details", { open: !!S.open[key] }, h("summary", { class: "note" }, summary), ...kids);
+    d.addEventListener("toggle", () => { S.open[key] = d.open; });
+    return d;
+  }
+  const table = (cols, rows) => h("table", {}, h("thead", {}, h("tr", {}, cols.map((c) => h("th", { scope: "col" }, c)))), h("tbody", {}, rows.map((r) => h("tr", {}, r.map((c) => h("td", {}, c))))));
 
-  // ------------------------------------------------------------------ diagram
-  const NODES = {
-    school: { x: 10, y: 110, w: 230, hgt: 62, t: "School district", d: "① where Mara stands" },
-    mara: { x: 380, y: 2, w: 240, hgt: 60, t: "Mara + guardian", d: "③④⑤ own words · decide access" },
-    lc: { x: 372, y: 104, w: 256, hgt: 90, t: "Mara's learner profile", d: "LearnCard + HCP · five items", hub: true },
-    ta: { x: 760, y: 40, w: 230, hgt: 62, t: "Tutor A (last tutor)", d: "② where Mara left off" },
-    tb: { x: 760, y: 178, w: 230, hgt: 62, t: "Tutor B (new tutor)", d: "reads via HCP" },
-  };
-  const EDGES = [
-    { id: "school", d: "M240,141 L372,145", lx: 306, ly: 132, label: "credentials" },
-    { id: "mara", d: "M500,62 L500,104", lx: 510, ly: 88, label: "own words · rules", a: "start" },
-    { id: "ta", d: "M760,71 C700,71 690,124 628,128", lx: 696, ly: 64, label: "session notes" },
-    { id: "tb", d: "M628,170 C690,170 700,209 760,209", lx: 692, ly: 228, label: "HCP query" },
-  ];
-  function lit(cond) {
-    if (cond === "A") return { nodes: ["tb"], edges: [] };
-    return { nodes: Object.keys(NODES), edges: EDGES.map((e) => e.id) };
-  }
-  function diagram(cond) {
-    const NS = "http://www.w3.org/2000/svg", on = lit(cond);
-    const el = (t, a, txt) => { const n = document.createElementNS(NS, t); for (const k in a) n.setAttribute(k, a[k]); if (txt != null) n.textContent = txt; return n; };
-    const svg = el("svg", { viewBox: "0 0 1000 250", role: "img", "aria-label": "The school district, the last tutor, and Mara with a guardian contribute to Mara's learner profile, held in LearnCard; the new tutor reads it through HCP." });
-    const defs = el("defs", {});
-    for (const k of ["off", "on", "rv"]) { const m = el("marker", { id: "ah-" + k, viewBox: "0 0 10 10", refX: "9", refY: "5", markerWidth: "7", markerHeight: "7", orient: "auto" }); m.append(el("path", { d: "M0,0 L10,5 L0,10 z", class: "ah " + k })); defs.append(m); }
-    svg.append(defs);
-    for (const e of EDGES) {
-      const rv = e.id === "tb" && S.revoked && cond !== "A", cls = rv ? "rv" : on.edges.includes(e.id) ? "on" : "off";
-      const g = el("g", { class: "e " + (cls === "off" ? "" : cls) });
-      g.append(el("path", { d: e.d, "marker-end": `url(#ah-${cls})` }), el("text", { x: e.lx, y: e.ly, "text-anchor": e.a || "middle" }, rv ? "access withdrawn" : e.label));
-      svg.append(g);
-    }
-    for (const [k, n] of Object.entries(NODES)) {
-      const g = el("g", { class: (on.nodes.includes(k) ? "on" : "off") + (n.hub ? " hub" : "") });
-      g.append(el("rect", { x: n.x, y: n.y, width: n.w, height: n.hgt, rx: 12 }));
-      g.append(el("text", { class: "t", x: n.x + n.w / 2, y: n.y + (n.hub ? 40 : 26), "text-anchor": "middle" }, n.t));
-      g.append(el("text", { class: "d", x: n.x + n.w / 2, y: n.y + (n.hub ? 64 : 48), "text-anchor": "middle" }, n.d));
-      svg.append(g);
-    }
-    return h("div", { class: "dg" }, svg);
-  }
-
-  // ------------------------------------------------------------------ the HCP message: the five items as HCP entries
-  function message(cond) {
-    if (S.revoked && cond !== "A") return { outcome: "error", error: "invalid-token", note: "Mara's guardian withdrew this tutor's access." };
-    const I = inc(cond);
-    if (!I.size) return { note: "No profile shared: the new tutor sees only the question." };
-    const DECL = { verified: "issuer-attested", inferred: "model-inferred", "learner-declared": "person-declared" };
-    const CATS = { 1: "education_learner_profile", 2: "learning_history", 3: "learner_statements", 4: "learner_statements", 5: "goals_and_constraints" };
-    return {
-      profile: "Minimum viable learner profile (LearnCard + HCP)", recipient: "Tutor B (new tutor)", purpose: "tutoring",
-      entries: MVLC.filter((it) => I.has(it.n)).map((it) => {
-        const e = { item: `${CIRC[it.n]} ${it.name}`, type: "ContextEntry", declarationType: DECL[it.type], category: CATS[it.n], value: val(it), source: src(it) };
-        if (it.n === 1) e.evidence = { type: "verifiable-credential", issuer: "School district (synthetic)", credentials: 17,
-          nextUp: NEXT.map(([c, what]) => ({ standard: c, label: what, sharedId: KG(c) })) };
-        if (it.n === 2) Object.assign(e, { confidence: "medium", observedAt: "2026-07-06", validUntil: "2026-11-03", basis: "10 tutored items, last 5 scored" });
-        return e;
-      }),
-      directives: [{ action: "sign", effect: "ask-first", text: RULE }],
-      neverShared: ["IEP and 504 support plans", "demographics", "full transcript and every score", "chat logs"],
-    };
-  }
-
-  // ------------------------------------------------------------------ adapter: the profile, ready for an AI tool
-  function contextBlock(cond) {
-    if (S.revoked && cond !== "A") return "No profile available: Mara's guardian withdrew this tool's access.";
-    const I = inc(cond);
-    if (!I.size) return "No profile shared. The tool sees only Mara's question.";
-    const L = [
-      "LEARNER PROFILE (minimum viable) · Mara · purpose: tutoring",
-      "Shared by Mara and a guardian through LearnCard + HCP. Use only what is below.",
-      "Treat VERIFIED as fact, INFERRED as a hint to confirm, LEARNER SAYS as Mara's own words.",
-      "",
-    ];
-    const it = (n) => MVLC[n - 1];
-    if (I.has(1)) L.push("① VERIFIED (school district, signed credentials): Mastered 17 of 23 Grade 8 standards. Next up: " +
-      NEXT.map(([c, w]) => `${c} ${w} [${KG(c)}]`).join("; ") + ".");
-    if (I.has(2)) L.push(S.wb ? "② INFERRED (AI tutor app, medium confidence, observed today, expires in 4 months): 2 of 2 correct on the systems-of-equations check. Continue with 8.F.B.4."
-      : "② INFERRED (last tutor, medium confidence, observed 2026-07-06, expires 2026-11-03): 4 of the last 5 systems-of-equations problems correct. Confirm with a short check before moving on.");
-    if (I.has(3)) L.push(`③ LEARNER SAYS (what helps): ${it(3).value}`);
-    if (I.has(4)) L.push(`④ LEARNER SAYS (what gets in the way): ${it(4).value}`);
-    if (I.has(5)) L.push(`⑤ LEARNER SAYS (time): ${it(5).value}`);
-    const off = MVLC.filter((x) => !I.has(x.n)).map((x) => CIRC[x.n]);
-    if (off.length) L.push(`Not shared by Mara: ${off.join(" ")}. Don't guess these; ask if you need them.`);
-    L.push("", `RULE from guardian: ${RULE}`, "Never ask for or infer: support plans, demographics.",
-      "When the session ends, report back: standard practised, problems attempted and correct. It returns to the profile as an INFERRED item.");
-    return L.join("\n");
-  }
-  function toolJson(cond) {
-    const m = message(cond);
-    return m.entries ? { ...m, reportBack: { as: "model-inferred", fields: ["standard", "sharedId", "attempted", "correct", "observedAt"] } } : m;
-  }
-  function labelChecks(cond) {
-    const t = contextBlock(cond), I = inc(cond);
-    if (!I.size || (S.revoked && cond !== "A")) return [];
-    return [
-      ["Verified items are marked VERIFIED, with who signed them", !I.has(1) || /① VERIFIED \(school district, signed/.test(t)],
-      ["Inferences are marked INFERRED, with confidence and expiry", !I.has(2) || /② INFERRED \(.*medium confidence.*expires/.test(t)],
-      ["Only the items Mara shared are included", MVLC.every((x) => I.has(x.n) === t.includes(CIRC[x.n] + " " + (x.n === 1 ? "VERIFIED" : x.n === 2 ? "INFERRED" : "LEARNER SAYS")))],
-      ["The guardian's rule travels with the profile", t.includes(RULE)],
-      ["Nothing from the left-out list (support plans, demographics)", !/IEP|504 plan|ethnicity|income/i.test(t)],
-      ["Standards carry shared IDs, not just local codes", !I.has(1) || t.includes(KG("8.EE.C.8"))],
-    ];
-  }
-  function copyText(text) {
-    const done = () => { S.copied = true; render(); setTimeout(() => { S.copied = false; render(); }, 1500); };
-    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, done);
-    else { const ta = h("textarea", {}); ta.value = text; document.body.append(ta); ta.select(); try { document.execCommand("copy"); } catch (e) {} ta.remove(); done(); }
-  }
-
-  // ------------------------------------------------------------------ page
-  function page() {
-    const cond = S.cond, parts = reply(cond), td = todo(cond), I = inc(cond);
-    const s1 = sec("1", "Mara asks a new AI tutor",
-      h("p", { class: "q" }, `"${QUESTION}"`),
-      h("p", { class: "note", style: "margin:0" }, "Grade 7, taking Grade 8 Mathematics (accelerated). Mara used a different AI tutor two weeks ago. Synthetic learner."));
-
-    const s2 = sec("2", "The new tutor's first reply",
-      h("div", { class: "seg", role: "group", "aria-label": "Learner context available to the tutor" },
-        ...["A", "C"].map((k) => h("button", { type: "button", "aria-pressed": String(cond === k), on: { click: () => { S.cond = k; render(); } } }, LABEL[k]))),
-      h("div", { class: "agent" }, h("div", { class: "who" }, "Tutor B (new tutor)"),
-        h("p", {}, parts.map((pt) => h("span", {}, pt.t, ...pt.ids.map((n) => h("span", { class: "tag", title: MVLC[n - 1].name }, CIRC[n])), " ")))),
-      h("div", { class: "todo" + (td.length ? "" : " done") },
-        td.length ? h("div", {}, h("b", {}, "Before it can really help, the tutor still has to:"), h("ul", {}, td.map((x) => h("li", {}, x))))
-          : h("b", {}, "✓ Nothing to ask first. It starts teaching straight away.")),
-      h("div", { class: "row", style: "margin-top:10px" }, st("mock", "Illustrative replies · same question, tutor and settings in both"),
-        h("span", { class: "note" }, `Profile items used: ${I.size ? [...I].map((n) => CIRC[n]).join(" ") : "none"}`)));
-
-    const s3 = sec("3", "The minimum viable learner profile",
-      h("p", { style: "margin-top:0" }, h("b", {}, "LearnCard + HCP, one bundle. "), "Five items, each of which changes the new tutor's first move. Mara and a guardian decide which to share."),
-      h("div", { class: "bundle" },
-        h("div", {}, h("b", {}, "LearnCard"), " holds Mara's profile and proves what's verified (the school's signed credentials)."),
-        h("div", {}, h("b", {}, "HCP"), " is how a tutor asks for it: only what Mara allows, every item labelled with its source, and inferences with an expiry date.")),
-      h("div", { class: "mv" }, MVLC.map((it) => {
-        const used = I.has(it.n);
-        return h("div", { class: "mvrow" + (used ? "" : " off") },
-          h("div", { class: "big", "aria-hidden": "true" }, CIRC[it.n]),
-          h("div", {}, h("div", { class: "name" }, it.name), h("div", { class: "row", style: "margin-top:4px" }, badge(it.type)), h("div", { class: "note" }, src(it))),
-          h("div", {}, h("div", { class: "k" }, "Mara's record"), h("div", { class: "val" }, val(it))),
-          h("div", {}, h("div", { class: "k" }, "Changes the first move"), h("div", { class: "chg" }, it.changes),
-            h("div", { class: "note" }, used ? "Used in the reply" : cond === "A" ? "Not shared: no profile" : S.revoked ? "Access withdrawn" : "Withheld by Mara and guardian")),
-          h("label", { class: "tog" }, h("input", { type: "checkbox", checked: S.on[it.key], on: { change: (e) => { S.on[it.key] = e.target.checked; render(); } } }), "Share"));
+  // ------------------------------------------------------------------ the four steps
+  const STEPS = [
+    { t: "District data", d: "what schools already have",
+      title: "1 · What the district already has about Mara",
+      status: ["synthetic", "Understudy fixture, district-style records"],
+      body: () => [
+        table(["Source system", "Record", "Value"], [
+          ["Assessment platform", "Math, spring", "96th percentile · Advanced"],
+          ["Assessment platform", "ELA, spring", "87th percentile · Advanced"],
+          ["Gradebook", "Grade 8 Math (accelerated)", "B+ (89.8%) · 1 missing assignment"],
+          ["Gradebook", "Grade 7 ELA", "A- (91.7%)"],
+          ["Standards tracker", "Math", "17 of 23 mastered · near mastery: 8.EE.C.8, 8.F.B.4, 8.F.B.5"],
+          ["Standards tracker", "ELA", "14 of 16 mastered · near mastery: L.7.2, L.7.4"],
+          ["Student survey", "Mara's own words", `“${WORDS.helps}” · “${WORDS.hard}” · ${WORDS.time}`],
+        ]),
+      ],
+      out: "Useful records, but spread across systems, each with its own codes and formats." },
+    { t: "Alignment", d: "maps records to shared skills",
+      title: "2 · An alignment service maps the records to shared skills",
+      status: ["proposed", "alignment service and shared skill IDs (placeholders here)"],
+      body: () => [
+        table(["District code", "Shared skill ID", "Skill", "Mara"], SKILLS.map((sk) => [h("code", {}, sk.code), h("code", {}, KG(sk.code)), sk.skill, sk.level])),
+        h("p", { class: "note" }, "Shared IDs are placeholders until mapped to a shared skills graph."),
+      ],
+      out: "The same skills, named the same way, so every tool reads them the same way." },
+    { t: "HCP export", d: "a minimal profile Mara controls",
+      title: "3 · Export a minimal learner profile through HCP",
+      status: ["working", "export and sharing choices, in this page"],
+      body: () => {
+        const item = (key, name, desc, kind) => h("div", { class: "item" + (S.share[key] ? "" : " off") },
+          h("div", {}, h("div", { class: "row" }, h("span", { class: "name" }, name), label(kind)), h("div", {}, desc)),
+          h("label", { class: "tog" }, h("input", { type: "checkbox", checked: S.share[key], on: { change: (e) => { S.share[key] = e.target.checked; render(); } } }), "Share"));
+        return [
+          h("p", { style: "margin-top:0" }, "Only what helps a learning tool, nothing more. Mara and a guardian choose what goes in."),
+          h("div", { class: "items" },
+            item("record", "School record", "Strengths (math 17/23, ELA 14/16) and the five aligned next skills", "verified"),
+            item("words", "Mara's own words", `What helps, what's hard, time available`, "learner")),
+          h("p", { class: "note" }, "Never exported: IEP and 504 support plans, demographics, the full transcript and every score."),
+          det("json", "The HCP export (JSON)", h("pre", { tabindex: 0 }, JSON.stringify(hcpExport(), null, 2))),
+        ];
+      },
+      out: "One small, labelled profile that Mara controls and any tool can read." },
+    { t: "AI tools", d: "each tool gets only what it needs",
+      title: "4 · A math tutor app and a writing tool each get only what they need",
+      status: ["proposed", "tool integrations · replies are illustrative"],
+      body: () => [h("div", { class: "tools" }, ...Object.keys(TOOLS).map((k) => {
+        const T = TOOLS[k], r = received(k);
+        return h("div", { class: "tool" },
+          h("h3", {}, T.name), h("div", { class: "note" }, `${T.what} · purpose: ${T.purpose}`),
+          h("div", { style: "margin-top:8px;font-weight:600;font-size:14px" }, "Receives"),
+          r.length ? h("ul", {}, r.map((x) => h("li", {}, x.text))) : h("p", { class: "note" }, "Nothing: Mara isn't sharing a profile."),
+          h("div", { class: "first" }, h("div", { class: "who" }, `${T.name}'s first message to Mara`), firstReply(k)),
+          det("ctx-" + k, "What the tool receives (context block)", h("pre", { tabindex: 0 }, contextBlock(k))));
       })),
-      h("p", { class: "leftout" }, h("b", {}, "Deliberately left out: "), "the full transcript and every score, demographics, IEP and 504 support plans, chat logs. ",
-        h("b", {}, "Nice to have, not minimal: "), "interests (chess, board games), longer-term goals."),
-      h("div", { class: "row" }, st("synthetic", "Mara's record"), st("working", "sharing switches")));
+      h("p", { class: "note" }, "The math app never sees Mara's ELA record and the writing tool never sees the math record: each tool's HCP grant covers only its purpose. Change the sharing choices in step 3 and these messages change.")],
+      out: "Each tool starts from what Mara already knows, without a new integration per district." },
+  ];
 
-    const s4 = sec("4", "Where it comes from, and who controls it", diagram(cond),
-      h("div", { class: "row", style: "margin-top:10px;justify-content:space-between" },
-        h("p", { class: "note", style: "margin:0;flex:1 1 420px" }, `The guardian's rule travels with the data: “${RULE}” Withdrawing access stops future retrieval; it does not delete copies a tutor already received.`),
-        S.revoked ? h("button", { type: "button", on: { click: () => { S.revoked = false; render(); } } }, "Restore tutor access")
-          : h("button", { type: "button", class: "danger", on: { click: () => { S.revoked = true; render(); } } }, "Withdraw tutor access")));
-
-    const text = S.fmt === "block" ? contextBlock(cond) : JSON.stringify(toolJson(cond), null, 2);
-    const checks = labelChecks(cond);
-    const s5 = sec("5", "Hand the profile to an AI tool",
-      h("p", { style: "margin-top:0" }, "An adapter turns the profile into what an AI tool can use, without losing the trust labels. Today: paste it in. Later: the tool asks through HCP."),
-      h("div", { class: "seg", role: "group", "aria-label": "Format" },
-        h("button", { type: "button", "aria-pressed": String(S.fmt === "block"), on: { click: () => { S.fmt = "block"; render(); } } }, "Context block · for an educator-built AI tutor app"),
-        h("button", { type: "button", "aria-pressed": String(S.fmt === "json"), on: { click: () => { S.fmt = "json"; render(); } } }, "Structured JSON · for a tool's API")),
-      h("pre", { tabindex: 0, style: "white-space:pre-wrap" }, text),
-      h("div", { class: "row", style: "margin-top:8px" },
-        h("button", { type: "button", class: "primary", on: { click: () => copyText(text) } }, S.copied ? "✓ Copied" : "Copy"),
-        cond === "C" && !S.revoked && S.on.leftoff
-          ? h("button", { type: "button", on: { click: () => { S.wb = !S.wb; render(); } } }, S.wb ? "Undo the write-back" : "Simulate the tool's write-back")
-          : null,
-        st("proposed", "live tool integration · copy-paste works today")),
-      checks.length ? h("ul", { class: "avail", style: "margin-top:12px" }, checks.map(([l, ok]) => h("li", {}, ok ? h("span", { class: "ok" }, "✓") : h("span", { class: "no" }), l))) : null,
-      S.wb ? h("p", { class: "note" }, "Written back: the tool's session result replaced ② as a new inferred item. The reply in section 2 now continues from it.") : null,
-      h("p", { class: "note" }, "Shared IDs are placeholders (kg.example) until the standards are mapped to the real Knowledge Graph by an alignment tool. ",
-        h("a", { href: "https://github.com/xd2164/hcp-learner-continuity" }, "Reference HCP provider (123/123 fixture scenarios)")));
-    return [s1, s2, s3, s4, s5];
+  function render() {
+    const flow = $("flow"); flow.replaceChildren();
+    STEPS.forEach((s, i) => {
+      if (i) flow.append(h("span", { class: "arr", "aria-hidden": "true" }, "→"));
+      flow.append(h("button", { type: "button", "aria-current": i === S.step ? "step" : false, on: { click: () => go(i) } },
+        h("span", { class: "k" }, "Step " + (i + 1)), h("span", { class: "t" }, s.t), h("span", { class: "d" }, s.d)));
+    });
+    const s = STEPS[S.step];
+    $("panel").replaceChildren(
+      h("div", { class: "head" }, h("div", {}, h("h2", {}, s.title), h("div", { class: "row", style: "margin-top:6px" }, st(...s.status))),
+        h("div", { class: "row" },
+          h("button", { type: "button", disabled: S.step === 0, on: { click: () => go(S.step - 1) } }, "← Back"),
+          h("button", { type: "button", class: "primary", disabled: S.step === STEPS.length - 1, on: { click: () => go(S.step + 1) } }, "Next →"))),
+      ...s.body(),
+      h("div", { class: "out" }, h("b", {}, "What comes out: "), s.out));
+    history.replaceState(null, "", "#step=" + (S.step + 1));
   }
-  function render() { $("app").replaceChildren(...page()); history.replaceState(null, "", "#cond=" + S.cond); }
+  function go(i) { S.step = Math.max(0, Math.min(STEPS.length - 1, i)); render(); }
   document.addEventListener("keydown", (e) => {
     if (e.target.matches("input")) return;
-    const k = ["A", "C"], i = k.indexOf(S.cond) + (e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0);
-    if (i !== k.indexOf(S.cond) && i >= 0 && i < 2) { S.cond = k[i]; render(); }
+    if (e.key === "ArrowRight") go(S.step + 1);
+    if (e.key === "ArrowLeft") go(S.step - 1);
   });
-  const HASH = location.hash, mc = /cond=([ABC])/.exec(HASH); if (mc) S.cond = mc[1] === "A" ? "A" : "C";
-  if (/open=1/.test(HASH)) S.open.hcp = true;
+  const HASH = location.hash, m = /step=(\d)/.exec(HASH); if (m) S.step = Math.max(0, Math.min(3, +m[1] - 1));
+  if (/open=1/.test(HASH)) S.open = { json: true, "ctx-math": true, "ctx-writing": true };
   render();
 
   // ------------------------------------------------------------------ self-test (#selftest=1)
   if (/selftest=1/.test(HASH)) {
     const res = [], ok = (n, c) => res.push((c ? "PASS " : "FAIL ") + n), keep = JSON.stringify(S);
-    ok("no context: nothing shared, placement quiz first", inc("A").size === 0 && todo("A")[0].startsWith("Run a placement quiz"));
-    ok("with the profile: all five items, nothing left to ask", inc("C").size === 5 && todo("C").length === 0);
-    ok("the two replies differ", reply("A").map((p) => p.t).join(" ") !== reply("C").map((p) => p.t).join(" "));
-    ok("every sentence with the profile names the items behind it", reply("C").every((p) => p.ids.length > 0));
-    for (const it of MVLC) {
-      S.on[it.key] = false;
-      ok(`withholding ${CIRC[it.n]} changes the reply and adds a step`, !reply("C").some((p) => p.ids.includes(it.n)) && todo("C").length > 0);
-      S.on[it.key] = true;
-    }
-    S.revoked = true;
-    ok("withdrawn access: the tutor starts from scratch", /starting from scratch/.test(reply("C")[0].t) && message("C").error === "invalid-token");
-    S.revoked = false;
-    ok("the HCP message is exactly the five items", message("C").entries.length === 5);
-    S.cond = "C";
-    ok("adapter: the context block marks verified and inferred with expiry", /① VERIFIED/.test(contextBlock("C")) && /② INFERRED \(.*expires/.test(contextBlock("C")));
-    ok("adapter: every label check passes with the full profile", labelChecks("C").length === 6 && labelChecks("C").every((c) => c[1]));
-    S.on.helps = false;
-    ok("adapter: a withheld item is left out and flagged", !/③ LEARNER SAYS/.test(contextBlock("C")) && /Not shared by Mara: ③/.test(contextBlock("C")) && labelChecks("C").every((c) => c[1]));
-    S.on.helps = true;
-    ok("adapter: JSON carries shared standard IDs and a report-back shape", JSON.stringify(toolJson("C")).includes(KG("8.EE.C.8")) && toolJson("C").reportBack.as === "model-inferred");
-    S.wb = true;
-    ok("write-back: item 2 updates and the reply continues from it", /AI tutor app/.test(contextBlock("C")) && /passed the systems-of-equations check/.test(reply("C")[0].t));
-    S.wb = false;
-    ok("support plans are never an item", !MVLC.some((it) => /IEP|504/.test(it.value)) && message("C").neverShared.includes("IEP and 504 support plans"));
-    Object.assign(S, JSON.parse(keep)); render();
+    ok("four steps: district data, alignment, HCP export, AI tools", STEPS.length === 4 && /Alignment/.test(STEPS[1].t) && /HCP/.test(STEPS[2].t));
+    ok("the math app receives math skills only", received("math").every((x) => !/L\.7\./.test(x.text)) && received("math").some((x) => /8\.EE\.C\.8/.test(x.text)));
+    ok("the writing tool receives ELA skills only", received("writing").every((x) => !/8\.[EF]/.test(x.text)) && received("writing").some((x) => /L\.7\.2/.test(x.text)));
+    ok("every aligned skill carries a shared ID", hcpExport().entries.filter((e) => e.standard).every((e) => e.sharedId === KG(e.standard)));
+    S.share.words = false;
+    ok("withholding Mara's words removes them from both tools", received("math").every((x) => x.kind === "verified") && !/15 minutes/.test(firstReply("writing")));
+    S.share.record = false;
+    ok("sharing nothing: both tools start from scratch", !received("writing").length && /short/.test(firstReply("math")) && hcpExport().entries.length === 0);
+    Object.assign(S, JSON.parse(keep));
+    ok("support plans are never exported", hcpExport().neverShared.includes("IEP and 504 support plans") && !JSON.stringify(hcpExport().entries).includes("IEP"));
+    render();
     document.title = res.every((x) => x.startsWith("PASS")) ? "SELFTEST PASS" : "SELFTEST FAIL";
     const pre = document.createElement("pre"); pre.id = "selftest"; pre.textContent = res.join(String.fromCharCode(10)); document.body.append(pre);
   }
