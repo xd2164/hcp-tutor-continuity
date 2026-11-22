@@ -2,64 +2,76 @@
 
 **Live demo:** <https://xd2164.github.io/hcp-tutor-continuity/>
 
-Every AI tutor today starts from zero. When a student moves to a new tutor, the
-new tutor runs a placement quiz, asks the same intake questions, and knows nothing
-about what worked last time.
+Every AI tutor today starts from zero. When a student moves to a new tutor, it runs a
+placement quiz, asks the same intake questions, and knows nothing about what worked last time.
 
-This demo shows the alternative. A student's verified school achievements, learning
-history and own words travel with them, through a learner wallet (LearnCard) and an
-open context protocol (the [Human Context Protocol, HCP](https://github.com/loyalagents/hcp-spec)),
-so a new tutor can pick up where the last one left off. The student and a guardian
-decide what each tutor sees.
+The fix is not a bigger data dump. It is a **minimum viable learner profile**: the five
+facts that change a new tutor's first move, carried by **LearnCard + HCP as one bundle**.
+
+## The minimum viable learner profile
+
+| # | Item | Example (synthetic learner Mara) | Trust label | Changes the tutor's first move |
+|---|---|---|---|---|
+| ① | **Where the learner stands** | Mastered 17 of 23 Grade 8 standards; next up: systems of equations | verified (signed by the school) | Skips mastered work; no placement quiz |
+| ② | **Where they left off** | Last tutor, 2 weeks ago: 4 of the last 5 right on systems of equations | inferred (medium confidence, expires) | A 2-problem check instead of re-teaching |
+| ③ | **What helps them learn** | "can you explain what its asking first" | learner-declared | How each problem is introduced |
+| ④ | **What gets in the way** | "i never know what the word problems are asking" | learner-declared | Practises reading the problem, not more drills |
+| ⑤ | **Time available** | About 15 minutes on school nights | learner-declared | Session length |
+
+**Deliberately left out:** the full transcript and every score, demographics, IEP and 504
+support plans, chat logs. **Nice to have, not minimal:** interests, longer-term goals.
+
+### One bundle, two jobs
+
+- **LearnCard** holds the learner's profile and proves what is verified: the school's
+  signed credentials behind item ①.
+- **HCP** ([Human Context Protocol](https://github.com/loyalagents/hcp-spec)) is how a tutor
+  asks for the profile: only what the learner and guardian allow, every item labelled with
+  its source, inferences with a confidence and an expiry date, and rules (such as "ask me
+  first") that travel with the data.
+
+Together they make the profile **portable** (any tutor, no new integration),
+**trustworthy** (verified vs inferred vs learner-declared is never blurred) and
+**learner-controlled** (share, withhold or withdraw at any time).
 
 ## The demo in one minute
 
-One page, one switch. Mara, a synthetic grade-7 student taking accelerated grade-8 math,
-asks a **new** AI tutor: *"Can you help me get ready for my next math unit?"*
+One page. Mara asks a **new** AI tutor: *"Can you help me get ready for my next math unit?"*
 
-| Switch | What the new tutor gets | Its first reply |
-|---|---|---|
-| **No context** | The question only | "Let's do a placement quiz": about 46 questions |
-| **LearnCard** | Verified school achievements: 17 of 23 standards mastered, 3 near mastery | Skips what's mastered and starts with systems of equations |
-| **+ HCP** | Plus learning history (practice estimates, the last tutor's session notes) and Mara's own words | "Picking up where your last tutor left off…": a 2-problem check, then the next standard, explained the way Mara asked, in 15 minutes, with chess problems |
+- **No profile:** the tutor's reply is a placement quiz (about 46 questions), plus questions
+  about how Mara learns, what's hard and how much time there is.
+- **With Mara's learner profile:** "Picking up where your last tutor left off… a quick
+  2-problem check, then the next standard… we'll start each word problem by working out
+  what it's asking… 15 minutes tonight." Each sentence is tagged ①–⑤ with the item behind it.
 
-Below the reply, a diagram lights up where each piece of information came from. Each
-card has a **Where it comes from** view. The learner controls can withhold a category
-or withdraw a tutor's access, and the next reply changes.
+Untick any item and that part of the reply disappears, while the list of what the tutor
+*still has to do first* grows. That shows the value of each item, one at a time. A
+diagram shows where each item comes from (school, last tutor, the learner), and **Show the
+profile as data** shows exactly what the new tutor receives.
 
-Presenting: ← → move the switch. Add `#cond=C` to open on "+ HCP".
-
-## What it demonstrates
-
-- **Continuity:** the new tutor builds on the previous tutor's evidence instead of re-testing.
-- **Trust:** every item says how it is known: *verified* (signed by the school),
-  *inferred* (practice estimates, tutor notes, with confidence) or *learner-declared*
-  (Mara's own words). An inference is never presented as a credential.
-- **Control:** the student and a guardian choose what each tutor may see. Support plans
-  (IEP/504) are never shared with tutors. Withdrawing access stops future retrieval.
-- **No new integration:** the new tutor uses the same HCP request as any other service.
+Presenting: ← → toggle the profile. Add `#cond=C` to open with the profile on.
 
 ## What is real and what is illustrative
 
 | Part | Status |
 |---|---|
-| Learner record (standards, practice estimates, Mara's statements) | **Synthetic fixture** from Understudy (seed 2368342781); no real student data |
-| Permission logic: what each condition sends, withholding, withdrawal | **Working** in the page |
+| Mara's record (standards, last-tutor result, statements) | **Synthetic fixture** from Understudy (seed 2368342781); no real student data |
+| Sharing, withholding and withdrawal logic | **Working** in the page |
 | HCP access rules | Checked against 123/123 fixture scenarios in the reference provider: [hcp-learner-continuity](https://github.com/xd2164/hcp-learner-continuity) |
 | Tutor replies | **Illustrative**: deterministic sample text, not a live AI tutor |
 | Live tutor and wallet integrations | **Proposed** |
 
 ## The pilot this points to
 
-Two independently built AI tutors, one learner wallet holding a transcript and an
-assessment credential, and a consenting cohort. Measure the time to the first useful
-practice, accuracy on the next assessment, and whether students and guardians
-understand what they shared. If the second tutor isn't measurably better than starting
-cold, stop.
+Two independently built AI tutors, LearnCard holding the minimum viable learner profile,
+and a consenting cohort. Measure the time to the first useful practice, accuracy on the
+next assessment, and whether students and guardians understand what they shared. Test
+each of the five items: if removing one makes no difference, it doesn't belong in the
+minimum. If the second tutor isn't measurably better than starting cold, stop.
 
 ## Run locally
 
-Open `docs/index.html` in a browser. It is a single self-contained file: no build,
-no keys, no network calls. Add `#selftest=1` to the URL to run the built-in checks.
+Open `docs/index.html` in a browser. It is a single self-contained file: no build, no keys,
+no network calls. Add `#selftest=1` to the URL to run the built-in checks.
 
 HCP is a working draft (2.0-draft-3); identifiers use the placeholder namespace `hcp.example`.

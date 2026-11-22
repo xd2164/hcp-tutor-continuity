@@ -36,21 +36,37 @@ button:focus-visible, summary:focus-visible, input:focus-visible { outline: 2px 
 .sh { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
 .num { width: 26px; height: 26px; border-radius: 50%; background: var(--ink); color: var(--card); display: inline-grid; place-items: center; font-weight: 700; font-size: 14px; flex: none; }
 .q { font-size: 21px; margin: 2px 0 6px; }
-.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin: 8px 0 14px; }
+.seg { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; margin: 8px 0 14px; }
 .seg button { border: 0; background: transparent; color: var(--muted); font-weight: 600; border-radius: 999px; }
 .seg button[aria-pressed="true"] { background: var(--soft); color: var(--ink); }
 .agent { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
 .agent .who { font-weight: 650; margin-bottom: 6px; }
-.agent p { margin: 0; font-size: 17px; line-height: 1.6; }
-.avail { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 9px; }
-.avail li { display: flex; gap: 10px; align-items: center; }
-.ok { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--good); color: var(--good); display: inline-grid; place-items: center; font-size: 11px; font-weight: 800; flex: none; }
-.no { width: 18px; height: 18px; border-radius: 50%; background: var(--base); display: inline-block; flex: none; }
+.agent p { margin: 0; font-size: 17px; line-height: 1.7; }
+.tag { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 4px; border-radius: 10px; font-size: 12px; font-weight: 700; background: var(--soft); border: 1px solid var(--line); color: var(--ink2); margin-left: 3px; vertical-align: 2px; }
+.todo { margin-top: 12px; }
+.todo ul { margin: 4px 0 0; padding-left: 20px; }
+.todo.done b { color: var(--good); }
 .st { display: inline-flex; gap: 6px; align-items: center; font-size: 12px; border: 1px solid var(--line); border-radius: 999px; padding: 1px 9px; color: var(--ink2); }
 .st b { color: var(--ink); font-weight: 600; }
 .st.w b { color: var(--good); }
-.pill { display: inline-flex; gap: 5px; align-items: center; font-size: 12px; border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; color: var(--ink2); }
+.pill { display: inline-flex; gap: 5px; align-items: center; font-size: 12px; border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; color: var(--ink2); white-space: nowrap; }
 .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.mv { display: grid; gap: 8px; margin-top: 8px; }
+.mvrow { display: grid; grid-template-columns: 34px 1.1fr 1.5fr 1.3fr auto; gap: 12px; align-items: start; border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+.mvrow.off { background: var(--soft); }
+.mvrow.off .val, .mvrow.off .chg { color: var(--muted); }
+.mvrow .big { font-size: 20px; font-weight: 800; color: var(--ink2); line-height: 1; padding-top: 2px; }
+.mvrow .name { font-weight: 650; }
+.mvrow .val { font-size: 15px; }
+.mvrow .chg { font-size: 14px; }
+.mvrow .k { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+@media (max-width: 860px) { .mvrow { grid-template-columns: 30px minmax(0, 1fr); } .mvrow > :nth-child(n+3) { grid-column: 2; } }
+.tog { display: inline-flex; gap: 6px; align-items: center; font-size: 14px; white-space: nowrap; }
+input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--ink); }
+.bundle { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 6px 0 4px; font-size: 14.5px; }
+.bundle > div { border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; background: var(--soft); }
+@media (max-width: 760px) { .bundle { grid-template-columns: minmax(0, 1fr); } }
+.leftout { margin-top: 10px; font-size: 14px; color: var(--ink2); }
 .dg { max-width: 860px; margin: 0 auto; }
 .dg svg { width: 100%; height: auto; display: block; }
 .dg rect { fill: var(--card); stroke: var(--line); stroke-width: 1.5; }
@@ -66,80 +82,70 @@ button:focus-visible, summary:focus-visible, input:focus-visible { outline: 2px 
 .dg .e.rv path { stroke: var(--bad); stroke-dasharray: 6 5; }
 .dg .e.rv text { fill: var(--bad); font-weight: 600; }
 .dg .ah { fill: var(--base); } .dg .ah.on { fill: var(--ink); } .dg .ah.rv { fill: var(--bad); }
-.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin-top: 8px; }
-.card { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; min-width: 0; }
-.card.off { background: var(--soft); }
-.card ul { margin: 6px 0 0; padding-left: 18px; font-size: 14px; }
-.sent { color: var(--good); font-weight: 600; }
-.omit { color: var(--muted); font-style: italic; }
-.tog { display: inline-flex; gap: 6px; align-items: center; margin: 4px 16px 4px 0; font-size: 15px; }
-input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--ink); }
-.log { margin: 6px 0 0; padding-left: 18px; font-size: 14px; color: var(--ink2); }
 details > summary { cursor: pointer; }
-pre { margin: 8px 0 0; padding: 10px; background: var(--soft); border-radius: 8px; overflow: auto; max-height: 360px; font: 12px/1.45 ui-monospace, Consolas, monospace; }
-table { border-collapse: collapse; font-size: 14px; }
-td, th { padding: 4px 8px; border-bottom: 1px solid var(--grid); text-align: left; }
+pre { margin: 8px 0 0; padding: 10px; background: var(--soft); border-radius: 8px; overflow: auto; max-height: 380px; font: 12px/1.45 ui-monospace, Consolas, monospace; }
 footer { margin-top: 18px; text-align: center; color: var(--muted); font-size: 13px; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>Switch AI tutors. Keep your learning.</h1>
-  <p class="sub">Mara is moving to a new AI tutor. How much does the new tutor need to start over?</p>
+  <p class="sub">A minimum viable learner profile, five items carried by LearnCard and HCP as one bundle, lets a new AI tutor pick up where the last one left off.</p>
   <main id="app"></main>
-  <footer>Synthetic learner from the Understudy fixture (seed 2368342781). Tutor replies are illustrative. ← → move the switch.</footer>
+  <footer>Synthetic learner from the Understudy fixture (seed 2368342781). Tutor replies are illustrative. ← → toggle the profile.</footer>
 </div>
 <script>
 (function () {
   "use strict";
-  // ------------------------------------------------------------------ data (Understudy learner SYN-04DC274F)
-  const MARA = { did: "did:example:understudy:syn-04dc274f", course: "Grade 8 Mathematics (accelerated)" };
+  // ------------------------------------------------------------------ the minimum viable learner context (Understudy learner SYN-04DC274F)
   const QUESTION = "Can you help me get ready for my next math unit?";
-  const MASTERED = ["8.NS.A.1", "8.NS.A.2", "8.EE.A.1", "8.EE.A.2", "8.EE.A.3", "8.EE.A.4", "8.EE.B.5", "8.EE.B.6", "8.EE.C.7", "8.F.A.1", "8.F.A.2", "8.F.A.3", "8.G.A.1", "8.G.A.2", "8.G.B.6", "8.G.B.7", "8.SP.A.1"];
-  const NEAR = [["8.EE.C.8", "systems of linear equations"], ["8.F.B.4", "modeling with linear functions"], ["8.F.B.5", "describing functions from graphs"]];
-  const PRACTICE = [["8.EE.B.5", "secure", "high"], ["8.NS.A.2", "secure", "high"], ["8.EE.C.7", "secure", "high"], ["8.F.A.1", "secure", "high"], ["8.F.A.2", "secure", "medium"], ["8.G.B.7", "secure", "medium"]];
-  const TUTOR_A_NOTE = "Tutored practice on 8.EE.C.8 (systems of equations): 4 of the last 5 correct. Estimated secure, medium confidence.";
-  const WORDS = [["What helps", "can you explain what its asking first"], ["Difficulty", "i never know what the word problems are asking"],
-    ["Time", "about 15 mins on school nights after cross country"], ["Interests", "board games, chess, anime and manga, swimming, running"]];
   const RULE = "Ask me before you sign me up for anything or agree to anything for me.";
-  const LABEL = { A: "No context", B: "LearnCard", C: "+ HCP" };
-  const S = { cond: "A", share: { verified: true, history: true, words: true }, revoked: false, requests: [], open: {} };
+  const MVLC = [
+    { n: 1, key: "stands", name: "Where Mara stands", type: "verified", source: "School district · signed credentials", level: "B",
+      value: "Mastered 17 of 23 Grade 8 standards. Next up: systems of equations, modeling with linear functions, describing functions from graphs.",
+      changes: "Skips the 17 mastered standards. No placement quiz.",
+      without: "Run a placement quiz first (about 46 questions)" },
+    { n: 2, key: "leftoff", name: "Where Mara left off", type: "inferred", source: "Last tutor's session notes · medium confidence", level: "C",
+      value: "2 weeks ago: 4 of the last 5 systems-of-equations problems right. Expires in 4 months.",
+      changes: "A 2-problem check instead of re-teaching systems of equations.",
+      without: "Re-teach systems of equations from the start" },
+    { n: 3, key: "helps", name: "What helps Mara learn", type: "learner-declared", source: "Mara, in Mara's own words", level: "C",
+      value: "“can you explain what its asking first”", changes: "Starts each problem by working out what it's asking.",
+      without: "Ask how Mara likes to learn" },
+    { n: 4, key: "blocks", name: "What gets in the way", type: "learner-declared", source: "Mara · also seen by the last tutor", level: "C",
+      value: "“i never know what the word problems are asking”", changes: "Practises reading word problems instead of more drills.",
+      without: "Ask what Mara finds hardest" },
+    { n: 5, key: "time", name: "Time available", type: "learner-declared", source: "Mara, in Mara's own words", level: "C",
+      value: "About 15 minutes on school nights, more on weekends.", changes: "Plans a 15-minute session for tonight.",
+      without: "Ask how much time Mara has" },
+  ];
+  const LABEL = { A: "No profile", C: "With Mara's learner profile" };
+  const S = { cond: "A", on: { stands: true, leftoff: true, helps: true, blocks: true, time: true }, revoked: false, open: {} };
 
-  // what each condition sends to the new tutor
-  function payload(cond) {
-    const items = [];
-    const perm = (inCond, on) => !inCond ? "not in this condition" : on ? "shared" : "withheld by Mara and guardian";
-    for (const st of MASTERED) items.push({ g: "verified", field: st, value: "Mastery (district credential)", perm: perm(cond !== "A", S.share.verified) });
-    for (const [st, what] of NEAR) items.push({ g: "verified", field: st, value: `Near mastery · ${what} (school record)`, perm: perm(cond !== "A", S.share.verified) });
-    for (const [st, lvl, conf] of PRACTICE) items.push({ g: "history", field: st, value: `${lvl}, ${conf} confidence (practice app)`, perm: perm(cond === "C", S.share.history) });
-    items.push({ g: "history", field: "Last tutor's notes", value: TUTOR_A_NOTE, perm: perm(cond === "C", S.share.history) });
-    for (const [k, v] of WORDS) items.push({ g: "words", field: k, value: `"${v}"`, perm: perm(cond === "C", S.share.words) });
-    const refused = cond !== "A" && S.revoked;
-    return { items, refused, shared: refused ? [] : items.filter((x) => x.perm === "shared") };
+  const included = (cond, it) => !S.revoked && S.on[it.key] && cond === "C";
+  const inc = (cond) => new Set(MVLC.filter((it) => included(cond, it)).map((it) => it.n));
+  function reply(cond) {
+    const cold = "Hi! Before we start, let's do a placement quiz so I can find your level: about 46 questions, two for each of this year's 23 standards.";
+    if (S.revoked && cond !== "A") return [{ t: "Mara's guardian withdrew this tutor's access, so I'm starting from scratch. " + cold, ids: [] }];
+    const I = inc(cond), parts = [];
+    if (!I.size) return [{ t: cold, ids: [] }];
+    if (I.has(1) && I.has(2)) parts.push({ t: "Picking up where your last tutor left off: you got 4 of your last 5 systems-of-equations problems right, so let's do a quick 2-problem check, then move on to modeling with linear functions.", ids: [1, 2] });
+    else if (I.has(1)) parts.push({ t: "You've mastered 17 of 23 standards, so we'll skip those and start with systems of equations.", ids: [1] });
+    else if (I.has(2)) parts.push({ t: "Your last tutor saw you get 4 of your last 5 systems-of-equations problems right. Let's check those quickly, then do a short quiz to see what else you know.", ids: [2] });
+    else parts.push({ t: "Let's start with a short quiz to find your level.", ids: [] });
+    if (I.has(3) && I.has(4)) parts.push({ t: "Word problems are where you get stuck, so we'll start each one by working out what it's asking, like you asked.", ids: [3, 4] });
+    else if (I.has(3)) parts.push({ t: "We'll start each problem by working out what it's asking, like you asked.", ids: [3] });
+    else if (I.has(4)) parts.push({ t: "Word problems are where you get stuck, so we'll practise reading them.", ids: [4] });
+    if (I.has(5)) parts.push({ t: "We'll keep it to 15 minutes tonight.", ids: [5] });
+    return parts;
   }
-  const has = (P, g) => P.shared.some((x) => x.g === g);
-  function answer(cond) {
-    const cold = "Hi! Before we start, let's do a placement quiz so I can find your level. It's about 46 questions: two for each of this year's 23 standards.";
-    if (cond === "A") return cold;
-    const P = payload(cond);
-    if (P.refused) return "Mara's access for this tutor was withdrawn, so I'm starting from scratch. " + cold;
-    if (cond === "B") return has(P, "verified")
-      ? "Your school record shows you've mastered 17 of 23 Grade 8 standards. Your next steps are systems of equations, modeling with linear functions and describing functions from graphs, all near mastery. Let's start with systems of equations."
-      : "I can't see your school record yet. " + cold;
-    const out = [];
-    if (has(P, "history")) out.push("Picking up where your last tutor left off: you got 4 of your last 5 systems-of-equations problems right, so let's do a quick 2-problem check and then move on to modeling with linear functions.");
-    else if (has(P, "verified")) out.push("Your school record shows systems of equations is your next step, so let's start there.");
-    else out.push("Let's begin with a short check to find your level.");
-    if (has(P, "verified")) out.push("You've already mastered 17 of 23 standards, so we'll skip those.");
-    if (has(P, "words")) out.push("You said it helps to understand what a word problem is asking first, so we'll do that together. We'll keep it to 15 minutes tonight, and the problems use chess and board games.");
-    return out.join(" ");
-  }
-  function intake(cond) {
-    if (cond === "A") return 46;
-    const P = payload(cond);
-    if (P.refused) return 46;
-    if (!has(P, "verified") && !(cond === "C" && has(P, "history"))) return 46;
-    return cond === "C" && has(P, "history") ? 2 : 6;
+  function todo(cond) {
+    const I = S.revoked && cond !== "A" ? new Set() : inc(cond), out = [];
+    if (!I.has(1) && !I.has(2)) out.push("Run a placement quiz first (about 46 questions)");
+    else if (!I.has(1)) out.push("Run a short placement quiz on the other standards");
+    if (I.has(1) && !I.has(2)) out.push("Re-teach systems of equations from the start");
+    for (const n of [3, 4, 5]) if (!I.has(n)) out.push(MVLC[n - 1].without);
+    return out;
   }
 
   // ------------------------------------------------------------------ helpers
@@ -157,38 +163,31 @@ footer { margin-top: 18px; text-align: center; color: var(--muted); font-size: 1
   const badge = (b) => { const d = h("span", { class: "dot" }); d.style.background = COLOR[b]; return h("span", { class: "pill" }, d, b); };
   const STX = { working: "● Working", synthetic: "◐ Synthetic fixture", mock: "○ Mocked", proposed: "◌ Proposed" };
   const st = (k, what) => h("span", { class: "st" + (k === "working" ? " w" : "") }, h("b", {}, STX[k]), what);
-  function det(key, summary, ...kids) {
-    const d = h("details", { open: !!S.open[key] }, h("summary", { class: "note" }, summary), ...kids);
-    d.addEventListener("toggle", () => { S.open[key] = d.open; });
-    return d;
-  }
+  const CIRC = ["", "①", "②", "③", "④", "⑤"];
   const sec = (n, title, ...kids) => h("section", { class: "sec" }, h("div", { class: "sh" }, h("span", { class: "num" }, n), h("h2", {}, title)), ...kids);
 
   // ------------------------------------------------------------------ diagram
   const NODES = {
-    school: { x: 10, y: 60, w: 220, hgt: 60, t: "School district", d: "mastery credentials" },
-    practice: { x: 10, y: 170, w: 220, hgt: 60, t: "Practice app", d: "practice estimates" },
-    mara: { x: 395, y: 2, w: 210, hgt: 58, t: "Mara + guardian", d: "decide who sees what" },
-    lc: { x: 372, y: 102, w: 256, hgt: 92, t: "LearnCard", d: "verified evidence + HCP context", hub: true },
-    ta: { x: 760, y: 60, w: 230, hgt: 60, t: "Tutor A (last tutor)", d: "left session notes" },
-    tb: { x: 760, y: 170, w: 230, hgt: 60, t: "Tutor B (new tutor)", d: "reads via HCP" },
+    school: { x: 10, y: 110, w: 230, hgt: 62, t: "School district", d: "① where Mara stands" },
+    mara: { x: 380, y: 2, w: 240, hgt: 60, t: "Mara + guardian", d: "③④⑤ own words · decide access" },
+    lc: { x: 372, y: 104, w: 256, hgt: 90, t: "Mara's learner profile", d: "LearnCard + HCP · five items", hub: true },
+    ta: { x: 760, y: 40, w: 230, hgt: 62, t: "Tutor A (last tutor)", d: "② where Mara left off" },
+    tb: { x: 760, y: 178, w: 230, hgt: 62, t: "Tutor B (new tutor)", d: "reads via HCP" },
   };
   const EDGES = [
-    { id: "school", d: "M230,90 C300,90 310,128 372,130", lx: 300, ly: 88, label: "credentials" },
-    { id: "practice", d: "M230,200 C300,200 310,166 372,166", lx: 300, ly: 218, label: "estimates" },
-    { id: "mara", d: "M500,60 L500,102", lx: 510, ly: 86, label: "own words · rules", a: "start" },
-    { id: "ta", d: "M760,90 C700,90 690,128 628,130", lx: 694, ly: 88, label: "session notes" },
-    { id: "tb", d: "M628,166 C690,166 700,200 760,200", lx: 694, ly: 218, label: "HCP query" },
+    { id: "school", d: "M240,141 L372,145", lx: 306, ly: 132, label: "credentials" },
+    { id: "mara", d: "M500,62 L500,104", lx: 510, ly: 88, label: "own words · rules", a: "start" },
+    { id: "ta", d: "M760,71 C700,71 690,124 628,128", lx: 696, ly: 64, label: "session notes" },
+    { id: "tb", d: "M628,170 C690,170 700,209 760,209", lx: 692, ly: 228, label: "HCP query" },
   ];
   function lit(cond) {
     if (cond === "A") return { nodes: ["tb"], edges: [] };
-    if (cond === "B") return { nodes: ["school", "lc", "tb"], edges: ["school", "tb"] };
     return { nodes: Object.keys(NODES), edges: EDGES.map((e) => e.id) };
   }
   function diagram(cond) {
     const NS = "http://www.w3.org/2000/svg", on = lit(cond);
     const el = (t, a, txt) => { const n = document.createElementNS(NS, t); for (const k in a) n.setAttribute(k, a[k]); if (txt != null) n.textContent = txt; return n; };
-    const svg = el("svg", { viewBox: "0 0 1000 240", role: "img", "aria-label": "The school, the practice app, the last tutor and Mara with a guardian write into LearnCard; the new tutor reads from it through HCP." });
+    const svg = el("svg", { viewBox: "0 0 1000 250", role: "img", "aria-label": "The school district, the last tutor, and Mara with a guardian contribute to Mara's learner profile, held in LearnCard; the new tutor reads it through HCP." });
     const defs = el("defs", {});
     for (const k of ["off", "on", "rv"]) { const m = el("marker", { id: "ah-" + k, viewBox: "0 0 10 10", refX: "9", refY: "5", markerWidth: "7", markerHeight: "7", orient: "auto" }); m.append(el("path", { d: "M0,0 L10,5 L0,10 z", class: "ah " + k })); defs.append(m); }
     svg.append(defs);
@@ -201,105 +200,110 @@ footer { margin-top: 18px; text-align: center; color: var(--muted); font-size: 1
     for (const [k, n] of Object.entries(NODES)) {
       const g = el("g", { class: (on.nodes.includes(k) ? "on" : "off") + (n.hub ? " hub" : "") });
       g.append(el("rect", { x: n.x, y: n.y, width: n.w, height: n.hgt, rx: 12 }));
-      g.append(el("text", { class: "t", x: n.x + n.w / 2, y: n.y + (n.hub ? 42 : 26), "text-anchor": "middle" }, n.t));
-      g.append(el("text", { class: "d", x: n.x + n.w / 2, y: n.y + (n.hub ? 66 : 47), "text-anchor": "middle" }, n.d));
+      g.append(el("text", { class: "t", x: n.x + n.w / 2, y: n.y + (n.hub ? 40 : 26), "text-anchor": "middle" }, n.t));
+      g.append(el("text", { class: "d", x: n.x + n.w / 2, y: n.y + (n.hub ? 64 : 48), "text-anchor": "middle" }, n.d));
       svg.append(g);
     }
     return h("div", { class: "dg" }, svg);
   }
 
+  // ------------------------------------------------------------------ the HCP message: the five items as HCP entries
+  function message(cond) {
+    if (S.revoked && cond !== "A") return { outcome: "error", error: "invalid-token", note: "Mara's guardian withdrew this tutor's access." };
+    const I = inc(cond);
+    if (!I.size) return { note: "No profile shared: the new tutor sees only the question." };
+    const DECL = { verified: "issuer-attested", inferred: "model-inferred", "learner-declared": "person-declared" };
+    const CATS = { 1: "education_learner_profile", 2: "learning_history", 3: "learner_statements", 4: "learner_statements", 5: "goals_and_constraints" };
+    return {
+      profile: "Minimum viable learner profile (LearnCard + HCP)", recipient: "Tutor B (new tutor)", purpose: "tutoring",
+      entries: MVLC.filter((it) => I.has(it.n)).map((it) => {
+        const e = { item: `${CIRC[it.n]} ${it.name}`, type: "ContextEntry", declarationType: DECL[it.type], category: CATS[it.n], value: it.value, source: it.source };
+        if (it.n === 1) e.evidence = { type: "verifiable-credential", issuer: "School district (synthetic)", credentials: 17, plusRecordOf: ["8.EE.C.8", "8.F.B.4", "8.F.B.5"] };
+        if (it.n === 2) Object.assign(e, { confidence: "medium", observedAt: "2026-07-06", validUntil: "2026-11-03", basis: "10 tutored items, last 5 scored" });
+        return e;
+      }),
+      directives: [{ action: "sign", effect: "ask-first", text: RULE }],
+      neverShared: ["IEP and 504 support plans", "demographics", "full transcript and every score", "chat logs"],
+    };
+  }
+
   // ------------------------------------------------------------------ page
-  const GROUPS = {
-    verified: { from: "from LearnCard", badge: "verified", title: "School achievements", src: "17 mastery credentials plus the school's record of what's next, issued and signed by the district", status: ["synthetic", "district record"] },
-    history: { from: "added by HCP", badge: "inferred", title: "Learning history", src: "Practice-app estimates and the last tutor's session notes, labelled as inferences", status: ["synthetic", "practice + notes"] },
-    words: { from: "added by HCP", badge: "learner-declared", title: "In Mara's own words", src: "What helps, what's hard, time available and interests", status: ["working", "HCP permissions"] },
-  };
   function page() {
-    const cond = S.cond, P = payload(cond);
+    const cond = S.cond, parts = reply(cond), td = todo(cond), I = inc(cond);
     const s1 = sec("1", "Mara asks a new AI tutor",
       h("p", { class: "q" }, `"${QUESTION}"`),
-      h("p", { class: "note", style: "margin:0" }, `Grade 7, taking ${MARA.course}. Mara used a different AI tutor last month. Synthetic learner.`));
+      h("p", { class: "note", style: "margin:0" }, "Grade 7, taking Grade 8 Mathematics (accelerated). Mara used a different AI tutor two weeks ago. Synthetic learner."));
 
-    const rows = [["Learner's question", true], ["Verified school achievements", has(P, "verified")], ["Authorized HCP learning history and Mara's own words", has(P, "history") || has(P, "words")]];
     const s2 = sec("2", "The new tutor's first reply",
-      h("div", { class: "seg", role: "group", "aria-label": "Information available to the tutor" },
-        ...["A", "B", "C"].map((k) => h("button", { type: "button", "aria-pressed": String(cond === k), on: { click: () => { S.cond = k; render(); } } }, LABEL[k]))),
-      h("div", { class: "agent" }, h("div", { class: "who" }, "Tutor B (new tutor)"), h("p", {}, answer(cond))),
-      h("ul", { class: "avail" }, rows.map(([l, on]) => h("li", {}, on ? h("span", { class: "ok", "aria-label": "available" }, "✓") : h("span", { class: "no", "aria-label": "not available" }), l))),
-      h("div", { class: "row", style: "margin-top:10px" }, st("mock", "Illustrative tutor replies · same question, tutor and settings in all three"),
-        h("span", { class: "st" }, h("b", {}, `${intake(cond)}`), " questions before targeted practice")));
+      h("div", { class: "seg", role: "group", "aria-label": "Learner context available to the tutor" },
+        ...["A", "C"].map((k) => h("button", { type: "button", "aria-pressed": String(cond === k), on: { click: () => { S.cond = k; render(); } } }, LABEL[k]))),
+      h("div", { class: "agent" }, h("div", { class: "who" }, "Tutor B (new tutor)"),
+        h("p", {}, parts.map((pt) => h("span", {}, pt.t, ...pt.ids.map((n) => h("span", { class: "tag", title: MVLC[n - 1].name }, CIRC[n])), " ")))),
+      h("div", { class: "todo" + (td.length ? "" : " done") },
+        td.length ? h("div", {}, h("b", {}, "Before it can really help, the tutor still has to:"), h("ul", {}, td.map((x) => h("li", {}, x))))
+          : h("b", {}, "✓ Nothing to ask first. It starts teaching straight away.")),
+      h("div", { class: "row", style: "margin-top:10px" }, st("mock", "Illustrative replies · same question, tutor and settings in both"),
+        h("span", { class: "note" }, `Profile items used: ${I.size ? [...I].map((n) => CIRC[n]).join(" ") : "none"}`)));
 
-    const groups = cond === "A" ? [] : cond === "B" ? ["verified"] : ["verified", "history", "words"];
-    const where = (g) => {
-      const its = payload("C").items.filter((x) => x.g === g);
-      return h("ul", {}, its.map((x) => h("li", { class: x.perm === "shared" || cond !== "C" ? "" : "omit" }, `${x.field}: ${x.value}`)));
-    };
-    const cards = P.refused ? h("p", { style: "color:var(--bad);font-weight:600" }, "Mara's access for this tutor was withdrawn, so nothing is sent beyond the question.")
-      : !groups.length ? h("p", {}, "Nothing. The new tutor starts cold, like every AI tutor today.")
-      : h("div", { class: "cards" }, groups.map((g) => {
-          const G = GROUPS[g], n = P.shared.filter((x) => x.g === g).length;
-          return h("div", { class: "card" + (n ? "" : " off") },
-            h("div", { class: "row", style: "justify-content:space-between" }, h("span", {}, h("span", { class: "pill" }, G.from), " ", badge(G.badge)), st(...G.status)),
-            h("div", { style: "margin-top:4px" }, h("b", {}, G.title), " ", n ? h("span", { class: "sent" }, `· ${n} sent`) : h("span", { class: "note" }, "· withheld")),
-            h("div", { class: "note" }, G.src),
-            det("where-" + g, "Where it comes from", where(g)));
-        }));
-    const s3 = sec("3", "What made the difference", diagram(cond),
-      h("div", { class: "note", style: "margin-top:8px" }, `Information the new tutor gets at “${LABEL[cond]}”`), cards);
+    const s3 = sec("3", "The minimum viable learner profile",
+      h("p", { style: "margin-top:0" }, h("b", {}, "LearnCard + HCP, one bundle. "), "Five items, each of which changes the new tutor's first move. Mara and a guardian decide which to share."),
+      h("div", { class: "bundle" },
+        h("div", {}, h("b", {}, "LearnCard"), " holds Mara's profile and proves what's verified (the school's signed credentials)."),
+        h("div", {}, h("b", {}, "HCP"), " is how a tutor asks for it: only what Mara allows, every item labelled with its source, and inferences with an expiry date.")),
+      h("div", { class: "mv" }, MVLC.map((it) => {
+        const used = I.has(it.n);
+        return h("div", { class: "mvrow" + (used ? "" : " off") },
+          h("div", { class: "big", "aria-hidden": "true" }, CIRC[it.n]),
+          h("div", {}, h("div", { class: "name" }, it.name), h("div", { class: "row", style: "margin-top:4px" }, badge(it.type)), h("div", { class: "note" }, it.source)),
+          h("div", {}, h("div", { class: "k" }, "Mara's record"), h("div", { class: "val" }, it.value)),
+          h("div", {}, h("div", { class: "k" }, "Changes the first move"), h("div", { class: "chg" }, it.changes),
+            h("div", { class: "note" }, used ? "Used in the reply" : cond === "A" ? "Not shared: no profile" : S.revoked ? "Access withdrawn" : "Withheld by Mara and guardian")),
+          h("label", { class: "tog" }, h("input", { type: "checkbox", checked: S.on[it.key], on: { change: (e) => { S.on[it.key] = e.target.checked; render(); } } }), "Share"));
+      })),
+      h("p", { class: "leftout" }, h("b", {}, "Deliberately left out: "), "the full transcript and every score, demographics, IEP and 504 support plans, chat logs. ",
+        h("b", {}, "Nice to have, not minimal: "), "interests (chess, board games), longer-term goals."),
+      h("div", { class: "row" }, st("synthetic", "Mara's record"), st("working", "sharing switches")));
 
-    const tog = (label, k) => h("label", { class: "tog" }, h("input", { type: "checkbox", checked: S.share[k], on: { change: (e) => { S.share[k] = e.target.checked; render(); } } }), label);
-    const s4 = sec("4", "Mara and a guardian stay in control",
-      h("p", { class: "note", style: "margin-top:0" }, cond === "C" ? "They decide what each tutor may see. The reply above changes on the next request." : "They decide what each tutor may see. Switch to “+ HCP” to see every control take effect."),
-      h("div", {}, tog("School achievements", "verified"), tog("Learning history", "history"), tog("Mara's own words", "words")),
-      h("div", { class: "row", style: "margin-top:8px" },
-        h("button", { type: "button", on: { click: () => { nextRequest(); render(); } } }, "Ask again (next request)"),
+    const s4 = sec("4", "Where it comes from, and who controls it", diagram(cond),
+      h("div", { class: "row", style: "margin-top:10px;justify-content:space-between" },
+        h("p", { class: "note", style: "margin:0;flex:1 1 420px" }, `The guardian's rule travels with the data: “${RULE}” Withdrawing access stops future retrieval; it does not delete copies a tutor already received.`),
         S.revoked ? h("button", { type: "button", on: { click: () => { S.revoked = false; render(); } } }, "Restore tutor access")
-          : h("button", { type: "button", class: "danger", on: { click: () => { S.revoked = true; render(); } } }, "Withdraw tutor access")),
-      S.requests.length ? h("ol", { class: "log" }, S.requests.map((r) => h("li", {}, r))) : null,
-      h("p", { class: "note", style: "margin-bottom:0" }, `Never shared with tutors: IEP and 504 support plans. The guardian's rule travels with the data: “${RULE}” Withdrawing stops future retrieval; it does not delete copies a tutor already received.`));
+          : h("button", { type: "button", class: "danger", on: { click: () => { S.revoked = true; render(); } } }, "Withdraw tutor access")));
 
-    const msg = { receivingService: "Tutor B (new tutor)", condition: LABEL[cond],
-      learnCardPresentation: has(P, "verified") ? P.shared.filter((x) => x.g === "verified").map((x) => ({ standard: x.field, result: x.value, declarationType: "issuer-attested" })) : null,
-      hcpContext: cond === "C" && !P.refused ? P.shared.filter((x) => x.g !== "verified").map((x) => ({ field: x.field, value: x.value, declarationType: x.g === "history" ? "model-inferred" : "person-declared" })) : [],
-      directives: cond === "C" && !P.refused && P.shared.length ? [{ action: "sign", effect: "ask-first", text: RULE }] : [],
-      omitted: P.items.filter((x) => P.refused || x.perm !== "shared").length };
     const s5 = h("details", { class: "sec", open: !!S.open.hcp, on: { toggle: (e) => { S.open.hcp = e.currentTarget.open; } } },
-      h("summary", {}, h("b", {}, "Show HCP details"), h("span", { class: "note" }, `  · the message the new tutor receives at “${LABEL[cond]}”`)),
-      h("pre", { tabindex: 0 }, JSON.stringify(msg, null, 2)),
+      h("summary", {}, h("b", {}, "Show the profile as data"), h("span", { class: "note" }, "  · exactly what the new tutor receives, as LearnCard + HCP send it")),
+      h("pre", { tabindex: 0 }, JSON.stringify(message(cond), null, 2)),
       h("div", { class: "row", style: "margin-top:8px" }, st("working", "permission logic in this page"), st("proposed", "live tutor integrations"),
         h("a", { href: "https://github.com/xd2164/hcp-learner-continuity" }, "Reference HCP provider (123/123 fixture scenarios)")));
     return [s1, s2, s3, s4, s5];
   }
-  function nextRequest() {
-    const P = payload("C"), n = S.requests.length + 1, c = (g) => P.shared.filter((x) => x.g === g).length;
-    const off = Object.keys(S.share).filter((k) => !S.share[k]).map((k) => GROUPS[k].title.toLowerCase());
-    S.requests.push(P.refused ? `Request ${n}: refused, access withdrawn. Nothing retrieved.`
-      : `Request ${n}: ${c("verified")} verified, ${c("history")} inferred, ${c("words")} in Mara's words${off.length ? `. Not retrievable now: ${off.join(", ")}` : ""}.`);
-  }
   function render() { $("app").replaceChildren(...page()); history.replaceState(null, "", "#cond=" + S.cond); }
   document.addEventListener("keydown", (e) => {
     if (e.target.matches("input")) return;
-    const k = ["A", "B", "C"], i = k.indexOf(S.cond) + (e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0);
-    if (i !== k.indexOf(S.cond) && i >= 0 && i < 3) { S.cond = k[i]; render(); }
+    const k = ["A", "C"], i = k.indexOf(S.cond) + (e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0);
+    if (i !== k.indexOf(S.cond) && i >= 0 && i < 2) { S.cond = k[i]; render(); }
   });
-  const HASH = location.hash, mc = /cond=([ABC])/.exec(HASH); if (mc) S.cond = mc[1];
-  if (/open=1/.test(HASH)) S.open = { "where-verified": true, "where-history": true, "where-words": true, hcp: true };
+  const HASH = location.hash, mc = /cond=([ABC])/.exec(HASH); if (mc) S.cond = mc[1] === "A" ? "A" : "C";
+  if (/open=1/.test(HASH)) S.open.hcp = true;
   render();
 
   // ------------------------------------------------------------------ self-test (#selftest=1)
   if (/selftest=1/.test(HASH)) {
     const res = [], ok = (n, c) => res.push((c ? "PASS " : "FAIL ") + n), keep = JSON.stringify(S);
-    ok("no context: question only, cold start", payload("A").shared.length === 0 && intake("A") === 46);
-    ok("LearnCard: 20 school records, nothing from HCP", payload("B").shared.length === 20 && payload("B").shared.every((x) => x.g === "verified"));
-    ok("+ HCP: adds learning history and Mara's words", has(payload("C"), "history") && has(payload("C"), "words"));
-    ok("the three replies differ", new Set(["A", "B", "C"].map(answer)).size === 3);
-    ok("+ HCP builds on the last tutor", /where your last tutor left off/.test(answer("C")) && intake("C") === 2);
-    S.share.history = false;
-    ok("withholding history removes the last tutor's notes", !/last tutor/.test(answer("C")) && !payload("C").shared.some((x) => x.field === "Last tutor's notes"));
-    nextRequest(); ok("next request reports what is not retrievable", /Not retrievable now: learning history/.test(S.requests[0]));
-    S.share.history = true; S.revoked = true;
-    ok("withdrawn access: LearnCard and + HCP start from scratch", /starting from scratch/.test(answer("B")) && /starting from scratch/.test(answer("C")) && answer("A") !== answer("C"));
-    ok("support plans are never part of any payload", !payload("C").items.some((x) => /IEP|504/.test(x.field + x.value)));
+    ok("no context: nothing shared, placement quiz first", inc("A").size === 0 && todo("A")[0].startsWith("Run a placement quiz"));
+    ok("with the profile: all five items, nothing left to ask", inc("C").size === 5 && todo("C").length === 0);
+    ok("the two replies differ", reply("A").map((p) => p.t).join(" ") !== reply("C").map((p) => p.t).join(" "));
+    ok("every sentence with the profile names the items behind it", reply("C").every((p) => p.ids.length > 0));
+    for (const it of MVLC) {
+      S.on[it.key] = false;
+      ok(`withholding ${CIRC[it.n]} changes the reply and adds a step`, !reply("C").some((p) => p.ids.includes(it.n)) && todo("C").length > 0);
+      S.on[it.key] = true;
+    }
+    S.revoked = true;
+    ok("withdrawn access: the tutor starts from scratch", /starting from scratch/.test(reply("C")[0].t) && message("C").error === "invalid-token");
+    S.revoked = false;
+    ok("the HCP message is exactly the five items", message("C").entries.length === 5);
+    ok("support plans are never an item", !MVLC.some((it) => /IEP|504/.test(it.value)) && message("C").neverShared.includes("IEP and 504 support plans"));
     Object.assign(S, JSON.parse(keep)); render();
     document.title = res.every((x) => x.startsWith("PASS")) ? "SELFTEST PASS" : "SELFTEST FAIL";
     const pre = document.createElement("pre"); pre.id = "selftest"; pre.textContent = res.join(String.fromCharCode(10)); document.body.append(pre);
